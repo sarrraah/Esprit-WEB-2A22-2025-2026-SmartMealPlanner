@@ -1,4 +1,11 @@
 <?php
+// ══════════════════════════════════════════════════════════════════
+// PARTIE 1 — Chargement des données de l'événement
+// Récupère l'événement depuis la DB via le contrôleur.
+// Si l'événement n'existe pas, redirige vers la liste.
+// Prépare toutes les variables d'affichage : dates, prix, statut,
+// image, badge CSS, événements similaires.
+// ══════════════════════════════════════════════════════════════════
 require_once __DIR__ . '/../../controller/EvenementController.php';
 
 $ctrl = new EvenementController();
@@ -49,7 +56,12 @@ $suggests = array_slice($suggests, 0, 3);
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/*
+ * PARTIE 2 — CSS
+ * Styles de la navbar, hero, breadcrumb, info-boxes,
+ * commentaires, réactions, pagination, analyse sentimentale,
+ * checkout modal et responsive mobile.
+ */
 body{font-family:'Inter',sans-serif;background:#fff5f5;color:#1a0505;min-height:100vh}
 
 nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
@@ -280,6 +292,11 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
 </head>
 <body>
 
+<!-- ══════════════════════════════════════════
+     PARTIE 3 — Navbar + Hero + Breadcrumb
+     Barre de navigation sticky, image hero de l'événement
+     (ou gradient coloré si pas d'image), fil d'Ariane.
+══════════════════════════════════════════ -->
 <nav>
   <a href="interfaceevent.php" class="logo">Event <span>Management</span></a>
   <div class="nav-links">
@@ -311,6 +328,13 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
 </div>
 
 <div class="layout">
+
+  <!-- ══════════════════════════════════════════
+       PARTIE 4 — Colonne principale (gauche)
+       Badges statut/type, titre, info-boxes (date/lieu/capacité),
+       description, commentaires & réactions, analyse sentimentale,
+       jauge des places, recommandations IA, événements similaires.
+  ══════════════════════════════════════════ -->
   <div class="main-col">
 
     <div class="d-badges">
@@ -370,7 +394,8 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
         <button type="button" class="comment-btn" id="submitComment">Publier</button>
       </div>
 
-      <!-- Sentiment Analysis -->
+      <!-- Sentiment Analysis — appelle analyzeSentiment.php via Groq API
+           pour analyser le sentiment des commentaires (positif/neutre/négatif) -->
       <div class="sentiment-block" id="sentiment-block">
         <div class="sentiment-title">🧠 Analyse Sentimentale</div>
         <div id="sentiment-content">
@@ -431,6 +456,12 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
 
   </div>
 
+  <!-- ══════════════════════════════════════════
+       PARTIE 5 — Sidebar droite
+       Prix, bouton Register/Waitlist/Closed selon statut,
+       QR Code de la page, bouton téléchargement PNG,
+       partage par lien/email/Facebook.
+  ══════════════════════════════════════════ -->
   <div class="sidebar-col">
     <div class="reg-card">
       <div class="reg-price-wrap">
@@ -479,6 +510,13 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
 </div>
 
 <script>
+/*
+ * PARTIE 6 — JavaScript principal
+ * Gère : chargement des commentaires (avec pagination),
+ * réactions emoji, analyse sentimentale (Groq API),
+ * recommandations IA, suppression de commentaire,
+ * formulaire de publication de commentaire.
+ */
 (function () {
   var ID_EVENT = <?= (int)$e->getIdEvent() ?>;
   var REACTION_TYPES = ['❤️','😂','😮','😢','👏','🔥'];
@@ -888,6 +926,12 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
 })();
 
 // ── Share buttons ──────────────────────────────────────────────────────
+/*
+ * PARTIE 7 — Partage & QR Code
+ * Copie du lien, partage par email et Facebook,
+ * génération du QR Code avec la librairie qrcodejs
+ * et téléchargement en PNG.
+ */
 (function () {
   var EVENT_TITLE = <?= json_encode($e->getTitre(), JSON_UNESCAPED_UNICODE) ?>;
   var PAGE_URL    = window.location.href;
@@ -969,7 +1013,12 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
 </script>
 
 <!-- ══════════════════════════════════════════
-     CHECKOUT MODAL
+     PARTIE 8 — Checkout Modal
+     Formulaire de réservation : nom, email, téléphone,
+     nombre de places, code promo, mode de paiement (carte/espèces).
+     Validation JS + appel send_invoice.php pour enregistrer
+     la participation et envoyer la facture par email.
+     Affiche un code promo si un palier Goals & Rewards est atteint.
 ══════════════════════════════════════════ -->
 <style>
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;display:none;align-items:center;justify-content:center;padding:16px}

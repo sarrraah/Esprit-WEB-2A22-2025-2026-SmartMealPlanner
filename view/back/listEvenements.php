@@ -73,7 +73,7 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
         margin-bottom: 0;
       }
       .adv-stats-wrap.open {
-        max-height: 1000px;
+        max-height: 1600px;
         opacity: 1;
         transform: translateY(0);
         margin-bottom: 28px;
@@ -81,12 +81,28 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
       .adv-stats-panel {
         position: relative;
         border-radius: 20px;
-        padding: 32px;
+        padding: 24px 0 0 0;
         background: #fff;
         color: #111827;
         border: 1px solid #e5e5e5;
         overflow: hidden;
         box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+        width: 100%;
+      }
+      .adv-stats-wrap.open {
+        max-height: 1600px;
+        opacity: 1;
+        transform: translateY(0);
+        margin-bottom: 28px;
+        width: 100%;
+      }
+      .adv-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        width: 100%;
       }
       .adv-stats-panel::before {
         content: "";
@@ -97,7 +113,6 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
           radial-gradient(circle at 80% 60%, rgba(13,110,253,0.12), rgba(13,110,253,0) 52%),
           radial-gradient(circle at 40% 90%, rgba(245,158,11,0.12), rgba(245,158,11,0) 60%);
         filter: blur(0px);
-        animation: advGlow 6s ease-in-out infinite alternate;
         pointer-events: none;
       }
       @keyframes advGlow {
@@ -112,6 +127,7 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
         justify-content: space-between;
         gap: 12px;
         margin-bottom: 18px;
+        padding: 0 24px;
       }
       .adv-stats-title {
         margin: 0;
@@ -127,19 +143,25 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
         position: relative;
         z-index: 1;
         display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        gap: 16px;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        width: 100%;
       }
+      .adv-chart canvas { width: 100% !important; height: 500px !important; }
       .adv-chart {
         background: #fff;
-        border: 1px solid #f0f0f0;
-        border-radius: 14px;
-        padding: 16px;
-        min-height: 280px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: none;
+        border-right: 1px solid #f0f0f0;
+        border-radius: 0;
+        padding: 20px;
+        min-height: 540px;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
       }
-      .adv-chart canvas { width: 100% !important; height: 240px !important; }
-      .col-4 { grid-column: span 4; }
+      .adv-chart:last-child { border-right: none; }
+      .col-4 { grid-column: span 1; }
+      .col-4:last-child { grid-column: span 1; }
       .adv-counters {
         position: relative;
         z-index: 1;
@@ -182,7 +204,8 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
       .counter-orange .counter-ico{ background: rgba(245,158,11,0.16); color:#f59e0b; }
       .counter-orange .counter-val{ color:#f59e0b; }
       @media (max-width: 980px) {
-        .col-4 { grid-column: span 12; }
+        .col-4 { grid-column: span 1; }
+        .adv-grid { grid-template-columns: 1fr; }
         .adv-counters { grid-template-columns: 1fr 1fr; }
       }
       @media (max-width: 560px) {
@@ -302,25 +325,47 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
               <div class="adv-stats-panel" id="advStatsPanel">
                 <div class="adv-stats-head">
                   <div>
-                    <h2 class="adv-stats-title">📊 Statistiques</h2>
-                    <div class="adv-stats-sub">Répartition par type • Participations • Évolution mensuelle</div>
-                  </div>
-                  <div class="adv-stats-sub">Mise à jour automatique</div>
-                </div>
-
-                <div class="adv-grid">
-                  <div class="adv-chart col-4">
-                    <canvas id="chart-repartition-type"></canvas>
-                  </div>
-                  <div class="adv-chart col-4">
-                    <canvas id="chart-participations-event"></canvas>
-                  </div>
-                  <div class="adv-chart col-4">
-                    <canvas id="chart-participations-month"></canvas>
+                    <h2 class="adv-stats-title">📊 Analytics Overview</h2>
+                    <div class="adv-stats-sub">Top events • Types • Participation distribution</div>
                   </div>
                 </div>
 
-                <div class="adv-counters">
+                <div class="row g-3" style="position:relative;z-index:1;padding:0 24px 24px">
+
+                  <!-- Col 1 : Top events by participations -->
+                  <div class="col-lg-4">
+                    <div style="background:#f9f9f9;border-radius:10px;padding:18px;height:100%">
+                      <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+                        <i class="bi bi-fire" style="color:#e74c3c;"></i> Top Events
+                        <span style="font-size:0.6rem;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;margin-left:2px;">by participations</span>
+                      </div>
+                      <div id="top-events-list"><div style="color:#bbb;font-size:0.8rem;text-align:center;padding:20px 0">Loading...</div></div>
+                    </div>
+                  </div>
+
+                  <!-- Col 2 : Top types -->
+                  <div class="col-lg-4">
+                    <div style="background:#f9f9f9;border-radius:10px;padding:18px;height:100%">
+                      <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+                        <i class="bi bi-tags-fill" style="color:#1a73e8;"></i> Events by Type
+                      </div>
+                      <div id="top-types-list"><div style="color:#bbb;font-size:0.8rem;text-align:center;padding:20px 0">Loading...</div></div>
+                    </div>
+                  </div>
+
+                  <!-- Col 3 : Donut chart -->
+                  <div class="col-lg-4">
+                    <div style="background:#f9f9f9;border-radius:10px;padding:18px;height:100%">
+                      <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+                        <i class="bi bi-pie-chart-fill" style="color:#f57f17;"></i> Type Distribution
+                      </div>
+                      <canvas id="chart-repartition-type" width="280" height="280" style="display:block;margin:0 auto;max-width:100%"></canvas>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="adv-counters" style="position:relative;z-index:1;padding:0 24px 24px">
                   <div class="counter-card counter-red">
                     <div class="counter-ico"><i class="fas fa-calendar"></i></div>
                     <div class="counter-val" data-counter="totalEvents">0</div>
@@ -752,10 +797,12 @@ async function loadStatsCharts() {
             if (charts.doughnut) charts.doughnut.destroy();
             charts.doughnut = new Chart(ctxD, {
                 type: 'doughnut',
-                data: { labels: labelsD, datasets: [{ data: valuesD, backgroundColor: colors, borderColor: '#fff', borderWidth: 2, hoverOffset: 10 }] },
-                options: Object.assign({}, chartDefaults(), {
+                data: { labels: labelsD, datasets: [{ data: valuesD, backgroundColor: colors, borderColor: '#fff', borderWidth: 2, hoverOffset: 0 }] },
+                options: {
+                  responsive: false,
+                  animation: false,
                   plugins: { legend: { position: 'bottom', labels: { color: '#333' } } }
-                })
+                }
             });
         }
 
@@ -822,6 +869,52 @@ async function loadStatsCharts() {
 
         statsTotals = data.totals || null;
         statsLoaded = true;
+
+        // ── Col 1: Top events by participations ──────────────────────
+        var topEvList = document.getElementById('top-events-list');
+        if (topEvList && data.participationsPerEvent && data.participationsPerEvent.length > 0) {
+            var maxP = Math.max.apply(null, data.participationsPerEvent.map(function(x){ return x.participations; })) || 1;
+            var rankColors = ['#e74c3c','#f57f17','#1a73e8','#2e7d32','#8e44ad'];
+            topEvList.innerHTML = data.participationsPerEvent.slice(0,5).map(function(ev, i) {
+                var pct = Math.round(ev.participations / maxP * 100);
+                var rc  = rankColors[i] || '#999';
+                var titre = String(ev.titre || '');
+                return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f0f0;">'
+                    + '<div style="width:22px;height:22px;border-radius:50%;background:'+rc+';color:white;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(i+1)+'</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:0.8rem;font-weight:600;color:#2d2d2d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+titre+'</div>'
+                    + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
+                    + '<div style="flex:1;background:#e9e9e9;border-radius:4px;height:5px;"><div style="width:'+pct+'%;background:'+rc+';height:5px;border-radius:4px;"></div></div>'
+                    + '<span style="font-size:0.65rem;color:#999;white-space:nowrap;">'+ev.participations+' participant'+(ev.participations>1?'s':'')+'</span>'
+                    + '</div></div></div>';
+            }).join('');
+        } else if (topEvList) {
+            topEvList.innerHTML = '<p style="font-size:0.8rem;color:#bbb;text-align:center;padding:20px 0">No data yet.</p>';
+        }
+
+        // ── Col 2: Events by type ─────────────────────────────────────
+        var topTypesList = document.getElementById('top-types-list');
+        if (topTypesList && data.revenueByType && data.revenueByType.length > 0) {
+            var maxT = Math.max.apply(null, data.revenueByType.map(function(x){ return x.revenue; })) || 1;
+            var catColors = ['#e74c3c','#1a73e8','#f57f17','#2e7d32','#8e44ad','#16a085'];
+            topTypesList.innerHTML = data.revenueByType.map(function(t, i) {
+                var pct = Math.round(t.revenue / maxT * 100);
+                var cc  = catColors[i % catColors.length];
+                return '<div style="padding:9px 0;border-bottom:1px solid #f0f0f0;">'
+                    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">'
+                    + '<div style="display:flex;align-items:center;gap:8px;">'
+                    + '<div style="width:10px;height:10px;border-radius:50%;background:'+cc+';flex-shrink:0;"></div>'
+                    + '<span style="font-size:0.82rem;font-weight:600;color:#2d2d2d;">'+t.type+'</span>'
+                    + '</div>'
+                    + '<span style="font-size:0.72rem;color:#fff;background:'+cc+';border-radius:12px;padding:2px 9px;font-weight:700;">'+t.revenue+'</span>'
+                    + '</div>'
+                    + '<div style="background:#e9e9e9;border-radius:4px;height:6px;">'
+                    + '<div style="width:'+pct+'%;background:'+cc+';height:6px;border-radius:4px;"></div>'
+                    + '</div></div>';
+            }).join('');
+        } else if (topTypesList) {
+            topTypesList.innerHTML = '<p style="font-size:0.8rem;color:#bbb;text-align:center;padding:20px 0">No data yet.</p>';
+        }
     } catch (e) {}
 }
 

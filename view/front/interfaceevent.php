@@ -445,11 +445,11 @@ sort($types);
       <p><span>Register</span> <span class="description-title">& Unlock Discounts 🎯</span></p>
     </div>
     <div class="container">
-      <div style="background:#fff;border:1px solid #fde8e8;border-radius:16px;padding:28px;max-width:700px;margin:0 auto">
+      <div style="background:#fff;border:1px solid #fde8e8;border-radius:16px;padding:28px;width:100%">
 
         <!-- Email input -->
         <div style="margin-bottom:20px">
-          <p style="font-size:14px;color:#666;margin-bottom:12px">Register for events and unlock exclusive discount codes. Enter your email to see your progress.</p>
+          <p style="font-size:14px;color:#b91c1c;font-weight:700;margin-bottom:12px">Register for events and unlock exclusive discount codes. Enter your email to see your progress.</p>
           <div style="display:flex;gap:10px">
             <input type="email" id="goals-email" placeholder="your@email.com"
               style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:'Inter',sans-serif">
@@ -476,7 +476,7 @@ sort($types);
     <div class="container">
       <div style="background:linear-gradient(135deg,#fff5f5,#fff);border:1px solid #fde8e8;border-radius:16px;padding:24px;margin-bottom:10px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px">
-          <p style="margin:0;font-size:14px;color:#666;max-width:600px">
+          <p style="margin:0;font-size:14px;color:#b91c1c;font-weight:700;max-width:600px">
             Our AI analyzes attendee ratings, popularity and event diversity to suggest the 3 best picks for you right now.
           </p>
           <button id="ai-refresh-btn" onclick="loadAIRecommendations()"
@@ -1529,44 +1529,36 @@ async function loadGoals() {
       progressHtml = '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;font-weight:600">🏆 You\'ve unlocked all rewards! You\'re a VIP Attendee!</div>';
     }
 
-    // Milestones list
+    // Milestones list — grid layout full width
     var shown    = 4;
-    var listHtml = milestones.map(function(m, i) {
+    var listHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">'
+      + milestones.map(function(m, i) {
       var unlocked = m.unlocked;
-      var hidden   = i >= shown ? 'class="goal-extra" style="display:none"' : '';
+      var extraCls = i >= shown ? 'goal-extra' : '';
       var rightCol = '';
       if (unlocked && m.promo_code) {
-        rightCol = `<div style="text-align:right">
-          <div style="font-size:10px;color:#166534;font-weight:600;margin-bottom:4px">✅ Unlocked</div>
-          <div onclick="copyCode('${m.promo_code}', this)"
-            style="font-size:11px;font-weight:800;color:#b91c1c;letter-spacing:1px;background:#fff5f5;border:1.5px dashed #f7c1c1;border-radius:6px;padding:3px 8px;cursor:pointer;user-select:all"
-            title="Click to copy">
-            ${m.promo_code}
-          </div>
-        </div>`;
+        rightCol = `<div onclick="copyCode('${m.promo_code}', this)"
+            style="font-size:11px;font-weight:800;color:#b91c1c;letter-spacing:1px;background:#fff5f5;border:1.5px dashed #f7c1c1;border-radius:6px;padding:4px 8px;cursor:pointer;user-select:all;margin-top:6px;text-align:center"
+            title="Click to copy">${m.promo_code}</div>`;
       } else if (unlocked) {
-        rightCol = `<div style="text-align:right">
-          <div style="font-size:10px;color:#166534;font-weight:600">✅ Unlocked</div>
-          <div style="font-size:11px;color:#9a3535">${m.discount}% off</div>
-        </div>`;
+        rightCol = `<div style="font-size:11px;color:#166534;font-weight:600;margin-top:4px">✅ ${m.discount}% off</div>`;
       } else {
-        rightCol = `<div style="text-align:right">
-          <span style="font-size:18px;font-weight:800;color:#ccc">${m.discount}%</span>
-          <div style="font-size:10px;color:#9a3535">${total}/${m.count} events</div>
-        </div>`;
+        rightCol = `<div style="font-size:20px;font-weight:800;color:#ddd;margin-top:4px">${m.discount}%</div>`;
       }
-      return `<div ${hidden} style="display:${i < shown ? 'flex' : 'none'};align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #fce8e8">
-        <span style="font-size:22px">${m.emoji}</span>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:600;color:${unlocked ? '#166534' : '#1a0505'}">${m.label}</div>
-          <div style="font-size:11px;color:#9a3535">${m.count} event${m.count > 1 ? 's' : ''}</div>
-        </div>
+      return `<div class="${extraCls}" style="display:${i < shown ? 'flex' : 'none'};flex-direction:column;align-items:center;text-align:center;
+        background:${unlocked ? '#f0fdf4' : '#fff'};
+        border:1px solid ${unlocked ? '#86efac' : '#fde8e8'};
+        border-radius:12px;padding:16px 12px;transition:all .2s">
+        <span style="font-size:28px;margin-bottom:4px">${m.emoji}</span>
+        <div style="font-size:13px;font-weight:700;color:${unlocked ? '#166534' : '#1a0505'}">${m.label}</div>
+        <div style="font-size:11px;color:#9a3535;margin-top:2px">${m.count} event${m.count > 1 ? 's' : ''}</div>
+        ${unlocked ? '' : `<div style="font-size:11px;color:#ccc;margin-top:2px">${total}/${m.count}</div>`}
         ${rightCol}
       </div>`;
-    }).join('');
+    }).join('') + '</div>';
 
     var toggleBtn = milestones.length > shown
-      ? `<button onclick="toggleGoals(this)" style="background:none;border:none;color:#ce1212;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;font-family:'Inter',sans-serif">
+      ? `<button onclick="toggleGoals(this)" style="background:none;border:none;color:#ce1212;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;font-family:'Inter',sans-serif">
            Show More ▼
          </button>`
       : '';
