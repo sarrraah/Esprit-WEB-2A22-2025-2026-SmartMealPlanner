@@ -152,11 +152,11 @@ include("header.php");
     <!-- Search & Sort -->
     <div class="filters-section">
       <div class="row align-items-center gy-2">
-        <div class="col-md-5">
+        <div class="col-md-6">
           <input type="text" id="searchProdCat" class="form-control search-input"
             placeholder="Search a product..." oninput="filtrerProduitsCat()">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
           <div style="display:flex;gap:6px;align-items:center;">
             <select id="sortProdCat" class="sort-select" style="flex:1;" onchange="filtrerProduitsCat();toggleResetBtnCat()">
               <option value="">— Sort —</option>
@@ -170,14 +170,6 @@ include("header.php");
               <i class="bi bi-x-lg"></i>
             </button>
           </div>
-        </div>
-        <div class="col-md-3">
-          <select id="filterStatutCat" class="sort-select w-100" onchange="filtrerProduitsCat()">
-            <option value="">All statuses</option>
-            <option value="Available">Available</option>
-            <option value="Out of Stock">Out of Stock</option>
-            <option value="Expired">Expired</option>
-          </select>
         </div>
       </div>
     </div>
@@ -541,7 +533,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 </div>
               </div>
               <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:12px;">
-                <i class="bi bi-truck" style="color:#ce1212;"></i> Delivery Method
+                <i class="bi bi-truck" style="color:#ce1212;"></i> Payment Method
               </div>
               <div class="row g-2 mb-3">
                 <div class="col-6">
@@ -1123,9 +1115,13 @@ function loadModalAvis(produitId) {
       var html = '';
       data.avis.forEach(function(a) {
         var stars = '★'.repeat(parseInt(a.note)) + '☆'.repeat(5 - parseInt(a.note));
+        var emoji = a.sentiment || '';
         html += '<div style="background:white;border-radius:8px;padding:10px 12px;margin-bottom:8px;border:1px solid #f0f0f0;">';
         html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">';
-        html += '<span style="color:#f39c12;font-size:0.95rem;">' + stars + '</span>';
+        html += '<div style="display:flex;align-items:center;gap:6px;">';
+        html += '<span style="color:#f39c12;font-size:0.95rem;letter-spacing:1px;">' + stars + '</span>';
+        if (emoji) html += '<span style="font-size:1.1rem;" title="Sentiment analysis">' + emoji + '</span>';
+        html += '</div>';
         html += '<span style="font-size:0.7rem;color:#bbb;">' + a.date_avis + '</span></div>';
         html += '<p style="font-size:0.82rem;color:#555;margin:0;line-height:1.5;">' + escHtml(a.commentaire) + '</p></div>';
       });
@@ -1164,16 +1160,26 @@ document.getElementById('modal-avis-form').addEventListener('submit', function(e
   formData.append('note', note);
   formData.append('commentaire', commentaire);
   formData.append('id_produit', id_produit);
+  var submitBtn = this.querySelector('button[type="submit"]');
+  var originalHtml = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Analyzing...'; }
   fetch('../front/submit_avis.php', { method: 'POST', body: formData })
     .then(function(r){ return r.json(); })
     .then(function(data) {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalHtml; }
       if (data.success) {
-        document.getElementById('modal-avis-success').style.display = 'inline';
+        var emoji = data.sentiment || '😐';
+        var successEl = document.getElementById('modal-avis-success');
+        successEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Thank you for your review! ' + emoji;
+        successEl.style.display = 'inline';
         document.getElementById('modal-avis-comment').value = '';
         resetModalStars();
         loadModalAvis(id_produit);
-        setTimeout(function(){ document.getElementById('modal-avis-success').style.display = 'none'; }, 3000);
+        setTimeout(function(){ successEl.style.display = 'none'; }, 3000);
       }
+    })
+    .catch(function() {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalHtml; }
     });
 });
 </script>
@@ -1634,7 +1640,7 @@ function openProductModalCat(id) {
                 </div>
               </div>
               <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:12px;">
-                <i class="bi bi-truck" style="color:#ce1212;"></i> Delivery Method
+                <i class="bi bi-truck" style="color:#ce1212;"></i> Payment Method
               </div>
               <div class="row g-2 mb-3">
                 <div class="col-6">

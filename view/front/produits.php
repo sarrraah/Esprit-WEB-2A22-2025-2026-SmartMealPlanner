@@ -1720,13 +1720,324 @@ document.addEventListener('DOMContentLoaded', function() {
                     style="border-radius:10px;border:1px solid #e0e0e0;font-size:0.85rem;padding:10px 14px;">
                 </div>
                 <div class="col-12">
-                  <input type="text" class="form-control" id="co-adresse" placeholder="Street address" required
-                    style="border-radius:10px;border:1px solid #e0e0e0;font-size:0.85rem;padding:10px 14px;">
+                  <select class="form-control" id="co-localisation" required onchange="onCityChange()"
+                    style="border-radius:10px;border:1px solid #e0e0e0;font-size:0.85rem;padding:10px 14px;background:white;cursor:pointer;">
+                    <option value="">Select city (Tunisia)</option>
+                    <option value="Tunis">Tunis</option>
+                    <option value="Ariana">Ariana</option>
+                    <option value="Ben Arous">Ben Arous</option>
+                    <option value="Manouba">Manouba</option>
+                    <option value="Nabeul">Nabeul</option>
+                    <option value="Zaghouan">Zaghouan</option>
+                    <option value="Bizerte">Bizerte</option>
+                    <option value="Béja">Béja</option>
+                    <option value="Jendouba">Jendouba</option>
+                    <option value="Le Kef">Le Kef</option>
+                    <option value="Siliana">Siliana</option>
+                    <option value="Sousse">Sousse</option>
+                    <option value="Monastir">Monastir</option>
+                    <option value="Mahdia">Mahdia</option>
+                    <option value="Sfax">Sfax</option>
+                    <option value="Kairouan">Kairouan</option>
+                    <option value="Kasserine">Kasserine</option>
+                    <option value="Sidi Bouzid">Sidi Bouzid</option>
+                    <option value="Gabès">Gabès</option>
+                    <option value="Medenine">Medenine</option>
+                    <option value="Tataouine">Tataouine</option>
+                    <option value="Gafsa">Gafsa</option>
+                    <option value="Tozeur">Tozeur</option>
+                    <option value="Kebili">Kebili</option>
+                  </select>
+                  <!-- Delivery time badge -->
+                  <div id="delivery-time-badge" style="display:none;margin-top:8px;padding:8px 14px;background:linear-gradient(135deg,#fff8e1,#ffe8cc);border:1px solid #ffc107;border-radius:10px;font-size:0.78rem;color:#856404;display:flex;align-items:center;gap:8px;">
+                    <i class="bi bi-clock-fill" style="color:#ce1212;font-size:0.9rem;"></i>
+                    <span id="delivery-time-text"></span>
+                  </div>
                 </div>
+
+                <script>
+                // Delivery time mapping based on distance from ESPRIT Ghazela (Ariana)
+                const deliveryTimes = {
+                  'Ariana': '30-60 minutes',
+                  'Tunis': '30-60 minutes',
+                  'Ben Arous': '30-60 minutes',
+                  'Manouba': '30-60 minutes',
+                  'Nabeul': '1-2 hours',
+                  'Bizerte': '1-2 hours',
+                  'Zaghouan': '1-2 hours',
+                  'Sousse': '2-3 hours',
+                  'Monastir': '2-3 hours',
+                  'Mahdia': '2-3 hours',
+                  'Sfax': '1-2 days',
+                  'Kairouan': '1-2 days',
+                  'Kasserine': '1-2 days',
+                  'Sidi Bouzid': '1-2 days',
+                  'Gabès': '1-2 days',
+                  'Medenine': '1-2 days',
+                  'Tataouine': '2-3 days',
+                  'Gafsa': '1-2 days',
+                  'Tozeur': '2-3 days',
+                  'Kebili': '2-3 days',
+                  'Béja': '1-2 hours',
+                  'Jendouba': '2-3 hours',
+                  'Le Kef': '2-3 hours',
+                  'Siliana': '2-3 hours'
+                };
+
+                function onCityChange() {
+                  // Reset address field when city changes
+                  document.getElementById('co-adresse').value = '';
+                  document.getElementById('co-adresse').style.borderColor = '#e0e0e0';
+                  var widget = document.getElementById('map-widget');
+                  if (widget) widget.style.display = 'none';
+                  
+                  // Update delivery time
+                  var city = document.getElementById('co-localisation').value;
+                  var badge = document.getElementById('delivery-time-badge');
+                  var text = document.getElementById('delivery-time-text');
+                  if (city && deliveryTimes[city]) {
+                    text.innerHTML = '<strong>Estimated delivery:</strong> ' + deliveryTimes[city] + ' from ESPRIT Ghazela';
+                    badge.style.display = 'flex';
+                  } else {
+                    badge.style.display = 'none';
+                  }
+                }
+                </script>
+
                 <div class="col-12">
-                  <input type="text" class="form-control" id="co-localisation" placeholder="City / Region" required
-                    style="border-radius:10px;border:1px solid #e0e0e0;font-size:0.85rem;padding:10px 14px;">
+                  <div style="position:relative;">
+                    <input type="text" class="form-control" id="co-adresse" placeholder="Street address" required
+                      autocomplete="off"
+                      oninput="onAdresseInput(this.value)"
+                      style="border-radius:10px;border:1px solid #e0e0e0;font-size:0.85rem;padding:10px 40px 10px 14px;">
+                    <button type="button" onclick="toggleMap()" title="Pin location on map"
+                      style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#ce1212;font-size:1rem;padding:0;line-height:1;">
+                      <i class="bi bi-geo-alt-fill"></i>
+                    </button>
+                    <!-- Autocomplete dropdown -->
+                    <div id="adresse-suggestions"
+                      style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:white;border:1px solid #e0e0e0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:9999;max-height:220px;overflow-y:auto;">
+                    </div>
+                  </div>
                 </div>
+
+                <!-- MAP WIDGET -->
+                <div class="col-12" id="map-widget" style="display:none;">
+                  <div style="border-radius:12px;overflow:hidden;border:1.5px solid #e0e0e0;position:relative;">
+                    <!-- Map toolbar -->
+                    <div style="background:#f9f9f9;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e0e0e0;flex-wrap:wrap;gap:6px;">
+                      <span style="font-size:0.75rem;color:#666;"><i class="bi bi-info-circle me-1" style="color:#ce1212;"></i>Click on the map to refine your exact location</span>
+                      <button type="button" onclick="useMyGPS()"
+                        style="background:#ce1212;color:white;border:none;border-radius:20px;padding:5px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;">
+                        <i class="bi bi-crosshair2"></i> Use my GPS
+                      </button>
+                    </div>
+                    <!-- Leaflet map container -->
+                    <div id="delivery-map" style="height:220px;width:100%;"></div>
+                    <!-- Selected address display -->
+                    <div id="map-address-display" style="display:none;padding:8px 12px;background:#fff8f8;border-top:1px solid #f0e0e0;font-size:0.78rem;color:#555;">
+                      <i class="bi bi-geo-alt-fill me-1" style="color:#ce1212;"></i>
+                      <span id="map-address-text"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Leaflet CSS + JS -->
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+                <style>
+                #adresse-suggestions .suggestion-item {
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 10px;
+                  padding: 10px 14px;
+                  cursor: pointer;
+                  border-bottom: 1px solid #f5f5f5;
+                  transition: background 0.15s;
+                }
+                #adresse-suggestions .suggestion-item:last-child { border-bottom: none; }
+                #adresse-suggestions .suggestion-item:hover { background: #fff5f5; }
+                #adresse-suggestions .suggestion-item .sug-icon {
+                  color: #ce1212;
+                  font-size: 0.9rem;
+                  margin-top: 2px;
+                  flex-shrink: 0;
+                }
+                #adresse-suggestions .suggestion-item .sug-main {
+                  font-size: 0.82rem;
+                  font-weight: 600;
+                  color: #2d2d2d;
+                  line-height: 1.3;
+                }
+                #adresse-suggestions .suggestion-item .sug-sub {
+                  font-size: 0.73rem;
+                  color: #999;
+                  margin-top: 1px;
+                }
+                </style>
+
+                <script>
+                var deliveryMap = null;
+                var deliveryMarker = null;
+                var adresseDebounce = null;
+
+                // ── AUTOCOMPLETE ──────────────────────────────────────────
+                function onAdresseInput(val) {
+                  clearTimeout(adresseDebounce);
+                  var box = document.getElementById('adresse-suggestions');
+                  if (val.length < 3) { box.style.display = 'none'; return; }
+                  adresseDebounce = setTimeout(function() {
+                    var city = document.getElementById('co-localisation').value;
+                    var query = val;
+                    if (city) query = val + ', ' + city + ', Tunisia';
+                    else query = val + ', Tunisia';
+                    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=6&addressdetails=1&accept-language=fr&countrycodes=tn')
+                      .then(function(r) { return r.json(); })
+                      .then(function(results) {
+                        renderSuggestions(results);
+                      })
+                      .catch(function() { box.style.display = 'none'; });
+                  }, 350);
+                }
+
+                function renderSuggestions(results) {
+                  var box = document.getElementById('adresse-suggestions');
+                  if (!results || results.length === 0) { box.style.display = 'none'; return; }
+                  box.innerHTML = '';
+                  results.forEach(function(r) {
+                    var parts = r.display_name.split(',');
+                    var main = parts.slice(0, 2).join(',').trim();
+                    var sub  = parts.slice(2, 5).join(',').trim();
+                    var item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.innerHTML =
+                      '<i class="bi bi-geo-alt sug-icon"></i>' +
+                      '<div><div class="sug-main">' + main + '</div>' +
+                      (sub ? '<div class="sug-sub">' + sub + '</div>' : '') + '</div>';
+                    item.addEventListener('mousedown', function(e) {
+                      e.preventDefault();
+                      selectSuggestion(r);
+                    });
+                    box.appendChild(item);
+                  });
+                  box.style.display = 'block';
+                }
+
+                function selectSuggestion(r) {
+                  document.getElementById('co-adresse').value = r.display_name;
+                  document.getElementById('co-adresse').style.borderColor = '#28a745';
+                  document.getElementById('adresse-suggestions').style.display = 'none';
+                  // Update delivery time badge based on current city
+                  var city = document.getElementById('co-localisation').value;
+                  var badge = document.getElementById('delivery-time-badge');
+                  var text  = document.getElementById('delivery-time-text');
+                  if (city && deliveryTimes && deliveryTimes[city]) {
+                    text.innerHTML = '<strong>Estimated delivery:</strong> ' + deliveryTimes[city] + ' from ESPRIT Ghazela';
+                    badge.style.display = 'flex';
+                  }
+                  // Open map and center on selected address
+                  var lat = parseFloat(r.lat);
+                  var lng = parseFloat(r.lon);
+                  var widget = document.getElementById('map-widget');
+                  widget.style.display = 'block';
+                  setTimeout(function() {
+                    if (!deliveryMap) {
+                      initDeliveryMap(lat, lng, 16);
+                    } else {
+                      deliveryMap.invalidateSize();
+                      deliveryMap.setView([lat, lng], 16);
+                    }
+                    placeMarkerSilent(lat, lng);
+                  }, 100);
+                }
+
+                // Hide suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                  if (!e.target.closest('#co-adresse') && !e.target.closest('#adresse-suggestions')) {
+                    var box = document.getElementById('adresse-suggestions');
+                    if (box) box.style.display = 'none';
+                  }
+                });
+
+                // ── MAP ───────────────────────────────────────────────────
+                function toggleMap() {
+                  var widget = document.getElementById('map-widget');
+                  var isHidden = widget.style.display === 'none';
+                  widget.style.display = isHidden ? 'block' : 'none';
+                  if (isHidden) {
+                    setTimeout(function() { initDeliveryMap(); }, 100);
+                  }
+                }
+
+                function initDeliveryMap(lat, lng, zoom) {
+                  lat  = lat  || 33.8869;
+                  lng  = lng  || 9.5375;
+                  zoom = zoom || 6;
+                  if (deliveryMap) { deliveryMap.invalidateSize(); return; }
+                  deliveryMap = L.map('delivery-map').setView([lat, lng], zoom);
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                  }).addTo(deliveryMap);
+                  deliveryMap.on('click', function(e) {
+                    placeMarker(e.latlng.lat, e.latlng.lng);
+                  });
+                }
+
+                // Place marker + reverse geocode → fill input
+                function placeMarker(lat, lng) {
+                  placeMarkerSilent(lat, lng);
+                  fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng)
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                      var addr = data.display_name || (lat.toFixed(5) + ', ' + lng.toFixed(5));
+                      document.getElementById('co-adresse').value = addr;
+                      document.getElementById('map-address-text').textContent = addr;
+                      document.getElementById('map-address-display').style.display = 'block';
+                      document.getElementById('co-adresse').style.borderColor = '#28a745';
+                    })
+                    .catch(function() {
+                      var coords = lat.toFixed(5) + ', ' + lng.toFixed(5);
+                      document.getElementById('co-adresse').value = coords;
+                    });
+                }
+
+                // Place marker without reverse geocode (used after autocomplete select)
+                function placeMarkerSilent(lat, lng) {
+                  if (deliveryMarker) {
+                    deliveryMarker.setLatLng([lat, lng]);
+                  } else {
+                    deliveryMarker = L.marker([lat, lng], {
+                      icon: L.divIcon({
+                        className: '',
+                        html: '<div style="background:#ce1212;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                      })
+                    }).addTo(deliveryMap);
+                  }
+                  document.getElementById('map-address-display').style.display = 'block';
+                  document.getElementById('map-address-text').textContent = document.getElementById('co-adresse').value;
+                }
+
+                function useMyGPS() {
+                  if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+                  navigator.geolocation.getCurrentPosition(function(pos) {
+                    var lat = pos.coords.latitude;
+                    var lng = pos.coords.longitude;
+                    var widget = document.getElementById('map-widget');
+                    widget.style.display = 'block';
+                    setTimeout(function() {
+                      if (!deliveryMap) { initDeliveryMap(lat, lng, 16); }
+                      else { deliveryMap.setView([lat, lng], 16); }
+                      placeMarker(lat, lng);
+                    }, 100);
+                  }, function() {
+                    alert('Unable to retrieve your location. Please allow location access.');
+                  });
+                }
+                </script>
                 <div class="col-12">
                   <div style="position:relative;">
                     <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:0.85rem;color:#999;">📞</span>
@@ -1741,15 +2052,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
               <!-- Delivery method -->
               <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:12px;">
-                <i class="bi bi-truck" style="color:#ce1212;"></i> Delivery Method
+                <i class="bi bi-truck" style="color:#ce1212;"></i> Payment Method
               </div>
               <div class="row g-2 mb-3">
                 <div class="col-6">
                   <label id="lbl-livraison" style="display:flex;align-items:center;gap:10px;border:2px solid #ce1212;border-radius:12px;padding:12px 14px;cursor:pointer;background:#fff8f8;">
                     <input type="radio" name="livraison" value="livraison" checked onchange="togglePaiement()" style="accent-color:#ce1212;">
                     <div>
-                      <div style="font-size:0.82rem;font-weight:600;color:#2d2d2d;"><i class="bi bi-truck me-1" style="color:#ce1212;"></i>Home Delivery</div>
-                      <div style="font-size:0.7rem;color:#999;">Pay on delivery</div>
+                      <div style="font-size:0.82rem;font-weight:600;color:#2d2d2d;"><i class="bi bi-cash-stack me-1" style="color:#28a745;"></i>Cash</div>
                     </div>
                   </label>
                 </div>
@@ -1758,7 +2068,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <input type="radio" name="livraison" value="carte" onchange="togglePaiement()" style="accent-color:#ce1212;">
                     <div>
                       <div style="font-size:0.82rem;font-weight:600;color:#2d2d2d;"><i class="bi bi-credit-card me-1" style="color:#1a73e8;"></i>Credit Card</div>
-                      <div style="font-size:0.7rem;color:#999;">Pay now online</div>
                     </div>
                   </label>
                 </div>
@@ -1992,7 +2301,7 @@ function confirmerCommande(e) {
   var discountedSub = achDiscount > 0 ? subtotal * (1 - achDiscount / 100) : subtotal;
   var total    = (method === 'livraison' && !freeDelivery) ? discountedSub + 8 : discountedSub;
   var items  = panier.map(function(p){ return {id: p.id, quantite: p.quantite}; });
-  var methodLabel = method === 'carte' ? 'Credit Card' : (freeDelivery ? 'Home Delivery (FREE 🎁)' : 'Home Delivery (+8,00 DT)');
+  var methodLabel = method === 'carte' ? 'Credit Card' : (freeDelivery ? 'Livraison à domicile (GRATUITE 🎁)' : 'Livraison à domicile (+8,00 DT) — Cash');
   if (achDiscount > 0) methodLabel += ' (-' + achDiscount + '% remise fidélité)';
 
   // Validate phone number

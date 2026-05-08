@@ -11,17 +11,11 @@ $avgNote     = $totalAvis > 0 ? round(array_sum(array_column($allAvis, 'note')) 
 $count5Stars = count(array_filter($allAvis, fn($a) => (int)$a['note'] === 5));
 $count1Star  = count(array_filter($allAvis, fn($a) => (int)$a['note'] === 1));
 
-// ── Filters ────────────────────────────────────────────────────────────────
-$filterProduit = (int)($_GET['produit'] ?? 0);
-$filterNote    = (int)($_GET['note']    ?? 0);
-$filterSearch  = trim($_GET['q']        ?? '');
-
-$filtered = array_values(array_filter($allAvis, function ($a) use ($filterProduit, $filterNote, $filterSearch) {
-    if ($filterProduit && (int)$a['id_produit'] !== $filterProduit) return false;
-    if ($filterNote    && (int)$a['note']        !== $filterNote)    return false;
-    if ($filterSearch  && stripos($a['commentaire'], $filterSearch) === false) return false;
-    return true;
-}));
+// ── PHP filter vars kept for backward compat but JS does the actual filtering
+$filterProduit = 0;
+$filterNote    = 0;
+$filterSearch  = '';
+$filtered      = $allAvis; // JS handles filtering client-side
 
 // ── Distinct products for dropdown ─────────────────────────────────────────
 $produits = [];
@@ -501,50 +495,41 @@ include('header.php');
   <div class="section-card" id="table-section">
     <div class="section-card-title">
       <i class="bi bi-chat-square-text-fill"></i> All Reviews
-      <span class="ms-auto" style="font-size:0.72rem;color:#999;font-weight:300;letter-spacing:0;">
-        <?= count($filtered) ?> result<?= count($filtered) !== 1 ? 's' : '' ?>
+      <span id="avis-result-count" class="ms-auto" style="font-size:0.72rem;color:#999;font-weight:300;letter-spacing:0;">
+        <?= $totalAvis ?> result<?= $totalAvis !== 1 ? 's' : '' ?>
       </span>
     </div>
 
-    <!-- Filters -->
-    <form method="GET" action="afficherAvis.php#table-section">
-      <div class="row g-2 mb-3">
-        <div class="col-md-4">
-          <select name="produit" class="filter-input" onchange="this.form.submit()">
-            <option value="0">All products</option>
-            <?php foreach ($produits as $pid => $pnom): ?>
-              <option value="<?= $pid ?>" <?= $filterProduit === $pid ? 'selected' : '' ?>>
-                <?= htmlspecialchars($pnom) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <select name="note" class="filter-input" onchange="this.form.submit()">
-            <option value="0">All ratings</option>
-            <?php for ($n = 5; $n >= 1; $n--): ?>
-              <option value="<?= $n ?>" <?= $filterNote === $n ? 'selected' : '' ?>>
-                <?= $n ?> star<?= $n > 1 ? 's' : '' ?>
-              </option>
-            <?php endfor; ?>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <input type="text" name="q" value="<?= htmlspecialchars($filterSearch) ?>"
-            placeholder="Search in comments…" class="filter-input">
-        </div>
-        <div class="col-md-2 d-flex gap-2">
-          <button type="submit" style="background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;flex:1;">
-            <i class="bi bi-search"></i>
-          </button>
-          <?php if ($filterProduit || $filterNote || $filterSearch): ?>
-            <a href="afficherAvis.php" style="background:#f5f5f5;color:#333;border:1px solid #e0e0e0;border-radius:8px;padding:8px 12px;font-size:0.8rem;text-decoration:none;display:flex;align-items:center;">
-              <i class="bi bi-x-lg"></i>
-            </a>
-          <?php endif; ?>
-        </div>
+    <!-- Filters (client-side — no page reload) -->
+    <div class="row g-2 mb-3">
+      <div class="col-md-4">
+        <select id="avis-filter-produit" class="filter-input" onchange="filtrerAvis();toggleResetAvis()">
+          <option value="0">All products</option>
+          <?php foreach ($produits as $pid => $pnom): ?>
+            <option value="<?= $pid ?>"><?= htmlspecialchars($pnom) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
-    </form>
+      <div class="col-md-2">
+        <select id="avis-filter-note" class="filter-input" onchange="filtrerAvis();toggleResetAvis()">
+          <option value="0">All ratings</option>
+          <?php for ($n = 5; $n >= 1; $n--): ?>
+            <option value="<?= $n ?>"><?= $n ?> star<?= $n > 1 ? 's' : '' ?></option>
+          <?php endfor; ?>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <input type="text" id="avis-filter-q" placeholder="Search in comments…"
+          class="filter-input" oninput="filtrerAvis();toggleResetAvis()">
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button id="avis-reset-btn" onclick="resetAvisFiltres()" title="Clear filters"
+          style="display:none;background:#e74c3c;color:white;border:none;border-radius:8px;
+                 padding:8px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;flex:1;">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
 
     <!-- Table -->
     <div class="table-responsive">
@@ -560,51 +545,51 @@ include('header.php');
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <?php if (count($filtered) === 0): ?>
-            <tr>
-              <td colspan="7" class="text-center text-muted py-4">
-                <i class="bi bi-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
-                No reviews found.
+        <tbody id="tbody-avis">
+          <?php foreach ($allAvis as $i => $avis): ?>
+            <tr class="avis-row"
+                data-produit="<?= (int)$avis['id_produit'] ?>"
+                data-note="<?= (int)$avis['note'] ?>"
+                data-commentaire="<?= htmlspecialchars(strtolower($avis['commentaire']), ENT_QUOTES) ?>">
+              <td style="color:#999;" class="avis-idx"><?= $i + 1 ?></td>
+              <td>
+                <?php if (!empty($avis['produit_nom'])): ?>
+                  <strong><?= htmlspecialchars($avis['produit_nom']) ?></strong>
+                <?php else: ?>
+                  <span style="color:#bbb;font-style:italic;">Produit supprimé</span>
+                <?php endif; ?>
+              </td>
+              <td style="white-space:nowrap;">
+                <?= renderStars((int)$avis['note']) ?>
+              </td>
+              <td style="color:#555;max-width:260px;">
+                <?= htmlspecialchars(mb_strimwidth($avis['commentaire'], 0, 80, '…')) ?>
+              </td>
+              <td style="color:#999;white-space:nowrap;font-size:0.78rem;">
+                <?= htmlspecialchars($avis['date_avis']) ?>
+              </td>
+              <td>
+                <?php if (isset($avis['sentiment']) && $avis['sentiment'] !== ''): ?>
+                  <span style="font-size:1.1rem;" title="<?= htmlspecialchars($avis['sentiment']) ?>">
+                    <?= htmlspecialchars($avis['sentiment']) ?>
+                  </span>
+                <?php else: ?>
+                  <span style="color:#ccc;">—</span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <a href="supprimerAvis.php?id=<?= (int)$avis['id_avis'] ?>" class="btn-delete">
+                  <i class="bi bi-trash"></i>
+                </a>
               </td>
             </tr>
-          <?php else: ?>
-            <?php foreach ($filtered as $i => $avis): ?>
-              <tr>
-                <td style="color:#999;"><?= $i + 1 ?></td>
-                <td>
-                  <?php if (!empty($avis['produit_nom'])): ?>
-                    <strong><?= htmlspecialchars($avis['produit_nom']) ?></strong>
-                  <?php else: ?>
-                    <span style="color:#bbb;font-style:italic;">Produit supprimé</span>
-                  <?php endif; ?>
-                </td>
-                <td style="white-space:nowrap;">
-                  <?= renderStars((int)$avis['note']) ?>
-                </td>
-                <td style="color:#555;max-width:260px;">
-                  <?= htmlspecialchars(mb_strimwidth($avis['commentaire'], 0, 80, '…')) ?>
-                </td>
-                <td style="color:#999;white-space:nowrap;font-size:0.78rem;">
-                  <?= htmlspecialchars($avis['date_avis']) ?>
-                </td>
-                <td>
-                  <?php if (isset($avis['sentiment']) && $avis['sentiment'] !== ''): ?>
-                    <span style="font-size:1.1rem;" title="<?= htmlspecialchars($avis['sentiment']) ?>">
-                      <?= htmlspecialchars($avis['sentiment']) ?>
-                    </span>
-                  <?php else: ?>
-                    <span style="color:#ccc;">—</span>
-                  <?php endif; ?>
-                </td>
-                <td>
-                  <a href="supprimerAvis.php?id=<?= (int)$avis['id_avis'] ?>" class="btn-delete">
-                    <i class="bi bi-trash"></i>
-                  </a>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          <?php endif; ?>
+          <?php endforeach; ?>
+          <tr id="avis-no-result" style="display:none;">
+            <td colspan="7" class="text-center text-muted py-4">
+              <i class="bi bi-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+              No reviews found.
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -612,4 +597,48 @@ include('header.php');
 
 </div>
 
-<?php include('footer.php'); ?>
+<script>
+function filtrerAvis() {
+  var produit = parseInt(document.getElementById('avis-filter-produit').value) || 0;
+  var note    = parseInt(document.getElementById('avis-filter-note').value)    || 0;
+  var q       = document.getElementById('avis-filter-q').value.toLowerCase().trim();
+
+  var rows    = Array.from(document.querySelectorAll('.avis-row'));
+  var visible = 0;
+  var idx     = 0;
+
+  rows.forEach(function(r) {
+    var matchP = !produit || parseInt(r.dataset.produit) === produit;
+    var matchN = !note    || parseInt(r.dataset.note)    === note;
+    var matchQ = !q       || r.dataset.commentaire.includes(q);
+    var show   = matchP && matchN && matchQ;
+    r.style.display = show ? '' : 'none';
+    if (show) {
+      idx++;
+      var idxCell = r.querySelector('.avis-idx');
+      if (idxCell) idxCell.textContent = idx;
+      visible++;
+    }
+  });
+
+  document.getElementById('avis-no-result').style.display = visible === 0 ? '' : 'none';
+  var countEl = document.getElementById('avis-result-count');
+  if (countEl) countEl.textContent = visible + ' result' + (visible !== 1 ? 's' : '');
+}
+
+function toggleResetAvis() {
+  var produit = parseInt(document.getElementById('avis-filter-produit').value) || 0;
+  var note    = parseInt(document.getElementById('avis-filter-note').value)    || 0;
+  var q       = document.getElementById('avis-filter-q').value.trim();
+  var btn     = document.getElementById('avis-reset-btn');
+  if (btn) btn.style.display = (produit || note || q) ? 'flex' : 'none';
+}
+
+function resetAvisFiltres() {
+  document.getElementById('avis-filter-produit').value = '0';
+  document.getElementById('avis-filter-note').value    = '0';
+  document.getElementById('avis-filter-q').value       = '';
+  toggleResetAvis();
+  filtrerAvis();
+}
+</script>
