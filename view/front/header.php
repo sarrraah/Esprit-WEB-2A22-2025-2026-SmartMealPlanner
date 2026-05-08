@@ -33,6 +33,7 @@
     <button class="btn-getstarted position-relative" onclick="ouvrirPanier()" style="border:none;cursor:pointer;">
       🛒 <span id="panier-badge" style="display:none;position:absolute;top:-6px;right:-6px;background:#fff;color:#c0392b;border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;line-height:18px;text-align:center;">0</span>
     </button>
+<<<<<<< HEAD
     <button onclick="ouvrirWishlist()" title="My Wishlist"
       style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#ce1212;position:relative;margin-left:6px;padding:4px 8px;">
       <i class="bi bi-heart-fill"></i>
@@ -151,3 +152,8 @@ function soumettreReclamation(e) {
   }, 3000);
 }
 </script>
+=======
+  </div>
+</header>
+<main class="main">
+>>>>>>> d88cae3e3c49685e750a1667bd339e4e111ac1b4
