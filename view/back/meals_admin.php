@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Back office admin shell — served directly by PHP so that
@@ -42,7 +42,7 @@ foreach ($stats as $type => $count) {
 <body class="index-page bo-meals-page">
 
 <div class="bo-layout">
-<?php $activePage = 'meals'; include __DIR__ . '/sidebar.php'; ?>
+<?php $activePage = 'meals'; include __DIR__ . '/meal_sidebar.php'; ?>
 
 <div class="bo-main-content">
 
@@ -50,7 +50,7 @@ foreach ($stats as $type => $count) {
     <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2 px-4">
       <h1 class="sitename mb-0 fs-5">Meals Management</h1>
       <nav class="d-flex gap-3 align-items-center">
-        <a href="../FrontOffice/Meals.php">View front office</a>
+        <a href="../front/Meals.php">View front office</a>
       </nav>
     </div>
   </header>
@@ -269,4 +269,5 @@ foreach ($stats as $type => $count) {
 </div><!-- /bo-layout -->
 </body>
 </html>
+
 

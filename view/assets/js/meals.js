@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Meals module + minimal Yummy header chrome (avoids full main.js AOS/Swiper deps).
  */
 console.log('meals.js loaded - version:', new Date().getTime());
@@ -211,7 +211,7 @@ console.log('meals.js loaded - version:', new Date().getTime());
     fd.append('meal_type', mealType);
     fd.append('meal_date', date);
 
-    fetch('/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/FrontOffice/plan_add_meal.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+    fetch('/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/plan_add_meal.php', { method: 'POST', body: fd, credentials: 'same-origin' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         showToast(data.ok
@@ -242,3 +242,4 @@ console.log('meals.js loaded - version:', new Date().getTime());
     }, 3000);
   }
 })();
+

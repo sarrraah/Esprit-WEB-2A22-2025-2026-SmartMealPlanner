@@ -85,7 +85,8 @@ if ($loggedInUserId !== '') {
           <li><a href="#hero" class="active">Home</a></li>
           <li><a href="front/interfaceevent.php">Events</a></li>
           <li><a href="front/produits.php">Shop</a></li>
-          <li><a href="front/mealplanner.php">Meal Planning</a></li>
+          <li><a href="front/Meals.php">Meals</a></li>
+          <li><a href="front/Plans.php">My Plan</a></li>
           <li><a href="front/recettes.php">Recipes</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>

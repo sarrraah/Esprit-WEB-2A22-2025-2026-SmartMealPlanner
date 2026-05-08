@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $activePage = 'plans';
 require_once __DIR__ . '/../../config/Database.php';
 require_once __DIR__ . '/../../model/Plan.php';
@@ -180,14 +180,14 @@ $objectifLabels = [
 <body class="index-page bo-meals-page">
 
 <div class="bo-layout">
-<?php include __DIR__ . '/sidebar.php'; ?>
+<?php include __DIR__ . '/meal_sidebar.php'; ?>
 
 <div class="bo-main-content">
   <header class="bo-header sticky-top">
     <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2 px-4">
       <h1 class="sitename mb-0 fs-5">My Plan</h1>
       <nav class="d-flex gap-3 align-items-center">
-        <a href="../FrontOffice/Plans.php">View front office</a>
+        <a href="../front/Plans.php">View front office</a>
       </nav>
     </div>
   </header>
@@ -195,7 +195,7 @@ $objectifLabels = [
   <main class="container-fluid px-4 py-4">
 
     <?php if (!$plan): ?>
-      <div class="alert alert-warning">No active plan found. <a href="../FrontOffice/create_plan.php">Create one here</a>.</div>
+      <div class="alert alert-warning">No active plan found. <a href="../front/create_plan.php">Create one here</a>.</div>
     <?php else: ?>
 
     <!-- ── Top: Plan Details (left) + Current Plan card (right) ── -->
@@ -559,7 +559,7 @@ $objectifLabels = [
   <?php endif; ?>
 </script>
 <script>
-const BASE = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/FrontOffice/';
+const BASE = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/';
 
 // Save plan details
 document.getElementById('plan-edit-form').addEventListener('submit', function(e) {
@@ -730,4 +730,5 @@ document.getElementById('meal-form').addEventListener('submit', function(e) {
 </script>
 </body>
 </html>
+
 

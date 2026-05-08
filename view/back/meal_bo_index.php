@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require_once __DIR__ . '/../../model/Meal.php';
 
@@ -38,7 +38,7 @@ try {
 <body class="index-page bo-meals-page">
 
 <div class="bo-layout">
-<?php $activePage = 'dashboard'; include __DIR__ . '/sidebar.php'; ?>
+<?php $activePage = 'dashboard'; include __DIR__ . '/meal_sidebar.php'; ?>
 
 <div class="bo-main-content">
 
@@ -46,7 +46,7 @@ try {
     <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2 px-4">
       <h1 class="sitename mb-0 fs-5">Dashboard</h1>
       <nav class="d-flex gap-3 align-items-center">
-        <a href="../FrontOffice/index.php">View front office</a>
+        <a href="../front/index.php">View front office</a>
       </nav>
     </div>
   </header>
@@ -129,7 +129,7 @@ try {
                   <h3 class="card-title mb-0">Front Office</h3>
                 </div>
                 <p class="card-text text-muted">Preview the public-facing meal gallery as visitors see it.</p>
-                <a href="../FrontOffice/Meals.php" class="btn btn-outline-secondary mt-auto">View Front Office</a>
+                <a href="../front/Meals.php" class="btn btn-outline-secondary mt-auto">View Front Office</a>
               </div>
             </div>
           </div>
@@ -146,4 +146,5 @@ try {
 </div><!-- /bo-layout -->
 </body>
 </html>
+
 

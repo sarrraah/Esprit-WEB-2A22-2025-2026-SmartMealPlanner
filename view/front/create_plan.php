@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require_once __DIR__ . '/../../controller/PlanController.php';
 
@@ -48,62 +48,31 @@ $objectives = [
 ];
 $selectedObj = $prefill['objectif'];
 
+require_once __DIR__ . '/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Create Your Plan — Smart Meal Planner</title>
-  <link href="<?php echo $assetPrefix; ?>img/favicon.jpg" rel="icon">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="<?php echo $assetPrefix; ?>css/main.css" rel="stylesheet">
-  <style>
-    body { background: #f8f9fa; }
-    .create-wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-    .back-link { font-size: 1rem; color: #555; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 1.25rem; }
-    .back-link:hover { color: #ce1212; }
-    .form-card { background: #fff; border-radius: 16px; padding: 2rem; border: 1px solid #f0f0f0; }
-    .side-card { background: #fff8f8; border-radius: 16px; padding: 2rem; border: 1px solid #fde8e8; height: 100%; }
-    .field-icon { width: 38px; height: 38px; background: #fff0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ce1212; font-size: 1.1rem; flex-shrink: 0; }
-    .input-group-icon { display: flex; align-items: center; gap: .75rem; }
-    .input-group-icon input, .input-group-icon select { flex: 1; }
-    .obj-btn { border: 2px solid #e0e0e0; border-radius: 10px; padding: .5rem 1rem; background: #fff; cursor: pointer; font-size: .95rem; font-weight: 500; transition: .2s; display: inline-flex; align-items: center; gap: .4rem; }
-    .obj-btn:hover, .obj-btn.selected { border-color: #ce1212; background: #fff0f0; color: #ce1212; }
-    .side-feature { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: 1.25rem; }
-    .side-feature-icon { width: 36px; height: 36px; background: #fff0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ce1212; flex-shrink: 0; }
-    .tip-bar { background: #fffbea; border-radius: 12px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: .75rem; font-size: 1rem; color: #555; margin-top: 1.5rem; }
-    .form-label { font-weight: 600; font-size: 1rem; margin-bottom: .5rem; }
-    .form-control, .form-select { font-size: 1rem; padding: .65rem .9rem; }
-    .form-text { font-size: .9rem; }
-    .kcal-wrap { position: relative; }
-    .kcal-wrap input { padding-right: 3.5rem; }
-    .kcal-unit { position: absolute; right: .9rem; top: 50%; transform: translateY(-50%); color: #999; font-size: .95rem; pointer-events: none; }
-    #cal-slider-track { user-select: none; }
-  </style>
-</head>
-<body>
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="index.php" class="logo d-flex align-items-center me-auto me-xl-0">
-        <img src="<?php echo $assetPrefix; ?>img/logo-smp.jpg" alt="SmartMealPlanner" height="44">
-        <h1 class="sitename"><span style="color:#212529;">Smart</span><span style="color:#ce1212;">MealPlanner</span></h1>
-      </a>
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="index.php">Home</a></li>
-          <li><a href="Meals.php">Meals</a></li>
-          <li><a href="Plans.php" class="active">My Plan</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-    </div>
-  </header>
+<style>
+  body { background: #f8f9fa; }
+  .create-wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  .back-link { font-size: 1rem; color: #555; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 1.25rem; }
+  .back-link:hover { color: #ce1212; }
+  .form-card { background: #fff; border-radius: 16px; padding: 2rem; border: 1px solid #f0f0f0; }
+  .side-card { background: #fff8f8; border-radius: 16px; padding: 2rem; border: 1px solid #fde8e8; height: 100%; }
+  .field-icon { width: 38px; height: 38px; background: #fff0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ce1212; font-size: 1.1rem; flex-shrink: 0; }
+  .input-group-icon { display: flex; align-items: center; gap: .75rem; }
+  .input-group-icon input, .input-group-icon select { flex: 1; }
+  .obj-btn { border: 2px solid #e0e0e0; border-radius: 10px; padding: .5rem 1rem; background: #fff; cursor: pointer; font-size: .95rem; font-weight: 500; transition: .2s; display: inline-flex; align-items: center; gap: .4rem; }
+  .obj-btn:hover, .obj-btn.selected { border-color: #ce1212; background: #fff0f0; color: #ce1212; }
+  .side-feature { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: 1.25rem; }
+  .side-feature-icon { width: 36px; height: 36px; background: #fff0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ce1212; flex-shrink: 0; }
+  .tip-bar { background: #fffbea; border-radius: 12px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: .75rem; font-size: 1rem; color: #555; margin-top: 1.5rem; }
+  .form-label { font-weight: 600; font-size: 1rem; margin-bottom: .5rem; }
+  .kcal-wrap { position: relative; }
+  .kcal-wrap input { padding-right: 3.5rem; }
+  .kcal-unit { position: absolute; right: .9rem; top: 50%; transform: translateY(-50%); color: #999; font-size: .95rem; pointer-events: none; }
+</style>
 
-  <main>
+<main class="main">
     <div class="create-wrap">
 
       <a href="Plans.php" class="back-link"><i class="bi bi-arrow-left"></i> Back to My Plan</a>
@@ -270,33 +239,21 @@ $selectedObj = $prefill['objectif'];
     </div>
   </main>
 
-  <footer id="footer" class="footer dark-background">
-    <div class="container copyright text-center py-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Smart Meal Planner</strong> <span>All Rights Reserved</span></p>
-    </div>
-  </footer>
-
   <!-- Delete Plan Modal -->
   <div class="modal fade" id="deletePlanModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold">Delete Plan</h5>
-        </div>
-        <div class="modal-body pt-2">
-          Delete your plan? This cannot be undone.
-        </div>
+        <div class="modal-header border-0 pb-0"><h5 class="modal-title fw-bold">Delete Plan</h5></div>
+        <div class="modal-body pt-2">Delete your plan? This cannot be undone.</div>
         <div class="modal-footer border-0 pt-0">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger"
-            onclick="document.getElementById('delete-plan-form').submit();">Delete</button>
+          <button type="button" class="btn btn-danger" onclick="document.getElementById('delete-plan-form').submit();">Delete</button>
         </div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="<?php echo $assetPrefix; ?>js/main.js"></script>
   <script>
     var RANGES = {
       'lose_weight':     { min: 1400, max: 1800, def: 1600, label: 'Weight loss: 1,400 – 1,800 kcal/day' },
@@ -407,6 +364,7 @@ $selectedObj = $prefill['objectif'];
     });
     <?php endif; ?>
   </script>
-</body>
-</html>
+
+<?php require_once __DIR__ . '/footer.php'; ?>
+
 

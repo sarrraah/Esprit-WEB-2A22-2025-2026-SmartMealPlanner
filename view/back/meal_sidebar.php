@@ -1,5 +1,5 @@
-<?php
-// Usage: include __DIR__ . '/sidebar.php';
+﻿<?php
+// Usage: include __DIR__ . '/meal_sidebar.php';
 // Pass $activePage = 'meals' | 'plans' | 'dashboard' before including.
 $activePage = $activePage ?? '';
 $base = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
@@ -27,10 +27,11 @@ $base = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
     </li>
     <li class="bo-sidebar__divider"></li>
     <li>
-      <a href="../FrontOffice/index.php">
+      <a href="../front/index.php">
         View Site
       </a>
     </li>
   </ul>
 </nav>
+
 

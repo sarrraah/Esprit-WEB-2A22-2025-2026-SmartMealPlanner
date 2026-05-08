@@ -45,7 +45,8 @@ if ($_hUserId !== '') {
         <li><a href="../index.php" <?= $currentPage === 'index.php' ? 'class="active"' : '' ?>>Home</a></li>
         <li><a href="interfaceevent.php" <?= $currentPage === 'interfaceevent.php' ? 'class="active"' : '' ?>>Events</a></li>
         <li><a href="produits.php" <?= $currentPage === 'produits.php' ? 'class="active"' : '' ?>>Shop</a></li>
-        <li><a href="mealplanner.php" <?= $currentPage === 'mealplanner.php' ? 'class="active"' : '' ?>>Meal Planning</a></li>
+        <li><a href="Meals.php" <?= in_array($currentPage, ['Meals.php','day_plan.php','Plans.php','view_plan.php','create_plan.php']) ? 'class="active"' : '' ?>>Meals</a></li>
+        <li><a href="Plans.php" <?= $currentPage === 'Plans.php' ? 'class="active"' : '' ?>>My Plan</a></li>
         <li><a href="recettes.php" <?= $currentPage === 'recettes.php' ? 'class="active"' : '' ?>>Recipes</a></li>
         <li><a href="#footer">Contact</a></li>
       </ul>

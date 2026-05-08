@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require_once __DIR__ . '/../../model/Plan.php';
 
@@ -63,91 +63,44 @@ $objectifLabels = [
 ];
 $objectifLabel = $objectifLabels[$plan->objectif] ?? ucfirst($plan->objectif);
 
+require_once __DIR__ . '/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>View Plan — Smart Meal Planner</title>
-  <link href="<?php echo $assetPrefix; ?>img/favicon.jpg" rel="icon">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="<?php echo $assetPrefix; ?>css/main.css" rel="stylesheet">
-  <style>
-    body { background: #f8f9fa; font-size: 1rem; }
-    .vp-wrap   { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-    .vp-card   { background: #fff; border-radius: 16px; border: 1px solid #f0f0f0; padding: 1.75rem; }
 
-    /* Sidebar */
-    .vp-sidebar h3  { font-size: 1.2rem; font-weight: 700; }
-    .vp-meta-label  { font-size: .85rem; color: #999; margin-bottom: .1rem; }
-    .vp-meta-val    { font-size: 1rem; font-weight: 600; color: #212529; }
-    .vp-badge       { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: .85rem; font-weight: 600; padding: .2rem .7rem; border-radius: 20px; }
-    .progress-track { height: 10px; border-radius: 5px; background: #f0f0f0; overflow: hidden; }
-    .progress-fill  { height: 10px; border-radius: 5px; background: #ce1212; }
-    .tip-box        { background: #f0faf0; border-radius: 10px; padding: 1rem; font-size: .95rem; color: #2e7d32; }
+<style>
+  body { background: #f8f9fa; font-size: 1rem; }
+  .vp-wrap   { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  .vp-card   { background: #fff; border-radius: 16px; border: 1px solid #f0f0f0; padding: 1.75rem; }
+  .vp-sidebar h3  { font-size: 1.2rem; font-weight: 700; }
+  .vp-meta-label  { font-size: .85rem; color: #999; margin-bottom: .1rem; }
+  .vp-meta-val    { font-size: 1rem; font-weight: 600; color: #212529; }
+  .vp-badge       { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: .85rem; font-weight: 600; padding: .2rem .7rem; border-radius: 20px; }
+  .progress-track { height: 10px; border-radius: 5px; background: #f0f0f0; overflow: hidden; }
+  .progress-fill  { height: 10px; border-radius: 5px; background: #ce1212; }
+  .tip-box        { background: #f0faf0; border-radius: 10px; padding: 1rem; font-size: .95rem; color: #2e7d32; }
+  .cal-nav    { display: flex; align-items: center; gap: .75rem; font-size: 1rem; font-weight: 600; }
+  .cal-nav button { background: none; border: 1px solid #e0e0e0; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .day-grid   { display: grid; grid-template-columns: repeat(7, 1fr); gap: .75rem; margin-top: 1.25rem; }
+  .day-cell   { border: 1.5px solid #e8e8e8; border-radius: 12px; padding: 1rem .5rem; text-align: center; background: #fafafa; transition: .2s; }
+  .day-cell.today   { border-color: #ce1212; background: #fff; }
+  .day-cell.past    { background: #fff; }
+  .day-cell.outside { opacity: .35; }
+  .day-name   { font-size: .85rem; font-weight: 700; color: #555; }
+  .day-date   { font-size: .8rem; color: #999; margin-bottom: .5rem; }
+  .day-cell.today .day-name { color: #ce1212; }
+  .day-kcal   { font-size: 1.5rem; font-weight: 700; color: #212529; line-height: 1.1; }
+  .day-cell.today .day-kcal { color: #ce1212; }
+  .day-unit   { font-size: .8rem; color: #999; }
+  .day-status { font-size: .78rem; font-weight: 600; margin: .5rem 0 .4rem; }
+  .status-completed { color: #2e7d32; }
+  .status-today     { color: #ce1212; background: #fff0f0; border-radius: 20px; padding: .1rem .5rem; }
+  .status-upcoming  { color: #999; }
+  .day-icon   { font-size: 1.2rem; }
+  .weekly-bar { background: #fff8f8; border-radius: 12px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem; }
+  .weekly-bar .label { font-size: .95rem; color: #555; }
+  .hint-bar { display: flex; align-items: center; gap: .6rem; font-size: .95rem; color: #777; margin-top: 1rem; }
+</style>
 
-    /* Calendar */
-    .cal-nav    { display: flex; align-items: center; gap: .75rem; font-size: 1rem; font-weight: 600; }
-    .cal-nav button { background: none; border: 1px solid #e0e0e0; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .cal-nav button:hover { border-color: #ce1212; color: #ce1212; }
-
-    .day-grid   { display: grid; grid-template-columns: repeat(7, 1fr); gap: .75rem; margin-top: 1.25rem; }
-    .day-cell   { border: 1.5px solid #e8e8e8; border-radius: 12px; padding: 1rem .5rem; text-align: center; background: #fafafa; transition: .2s; }
-    .day-cell.today   { border-color: #ce1212; background: #fff; }
-    .day-cell.past    { background: #fff; }
-    .day-cell.outside { opacity: .35; }
-    .day-cell:hover:not(.outside) { border-color: #ce1212; cursor: pointer; }
-
-    .day-name   { font-size: .85rem; font-weight: 700; color: #555; }
-    .day-date   { font-size: .8rem; color: #999; margin-bottom: .5rem; }
-    .day-cell.today .day-name { color: #ce1212; }
-    .day-cell.today .day-date { color: #ce1212; }
-
-    .day-kcal   { font-size: 1.5rem; font-weight: 700; color: #212529; line-height: 1.1; }
-    .day-cell.today .day-kcal { color: #ce1212; }
-    .day-unit   { font-size: .8rem; color: #999; }
-
-    .day-status { font-size: .78rem; font-weight: 600; margin: .5rem 0 .4rem; }
-    .status-completed { color: #2e7d32; }
-    .status-today     { color: #ce1212; background: #fff0f0; border-radius: 20px; padding: .1rem .5rem; }
-    .status-upcoming  { color: #999; }
-
-    .day-icon   { font-size: 1.2rem; }
-    .day-icon.check  { color: #2e7d32; }
-    .day-icon.arrow  { color: #ce1212; }
-    .day-icon.lock   { color: #ccc; }
-
-    /* Weekly summary */
-    .weekly-bar { background: #fff8f8; border-radius: 12px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem; }
-    .weekly-bar .label { font-size: .95rem; color: #555; }
-    .weekly-bar strong { color: #212529; }
-
-    .hint-bar { display: flex; align-items: center; gap: .6rem; font-size: .95rem; color: #777; margin-top: 1rem; }
-  </style>
-</head>
-<body>
-
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="index.php" class="logo d-flex align-items-center me-auto me-xl-0">
-        <img src="<?php echo $assetPrefix; ?>img/logo-smp.jpg" alt="SmartMealPlanner" height="44">
-        <h1 class="sitename"><span style="color:#212529;">Smart</span><span style="color:#ce1212;">MealPlanner</span></h1>
-      </a>
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="index.php">Home</a></li>
-          <li><a href="Meals.php">Meals</a></li>
-          <li><a href="Plans.php" class="active">My Plan</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-    </div>
-  </header>
-
-  <main>
+<main class="main">
     <div class="vp-wrap">
 
       <!-- Page header -->
@@ -305,28 +258,15 @@ $objectifLabel = $objectifLabels[$plan->objectif] ?? ucfirst($plan->objectif);
     </div>
   </main>
 
-  <footer id="footer" class="footer dark-background">
-    <div class="container copyright text-center py-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Smart Meal Planner</strong> <span>All Rights Reserved</span></p>
-    </div>
-  </footer>
-
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  <div id="preloader"></div>
   <!-- Delete Plan Modal -->
   <div class="modal fade" id="deletePlanModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold">Delete Plan</h5>
-        </div>
-        <div class="modal-body pt-2">
-          Delete your plan? This cannot be undone.
-        </div>
+        <div class="modal-header border-0 pb-0"><h5 class="modal-title fw-bold">Delete Plan</h5></div>
+        <div class="modal-body pt-2">Delete your plan? This cannot be undone.</div>
         <div class="modal-footer border-0 pt-0">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger"
-            onclick="document.getElementById('delete-plan-form').submit();">Delete</button>
+          <button type="button" class="btn btn-danger" onclick="document.getElementById('delete-plan-form').submit();">Delete</button>
         </div>
       </div>
     </div>
@@ -334,7 +274,6 @@ $objectifLabel = $objectifLabels[$plan->objectif] ?? ucfirst($plan->objectif);
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="<?php echo $assetPrefix; ?>js/main.js"></script>
   <script>
     document.getElementById('btn-delete-plan').addEventListener('click', function() {
       new bootstrap.Modal(document.getElementById('deletePlanModal')).show();
@@ -369,6 +308,7 @@ $objectifLabel = $objectifLabels[$plan->objectif] ?? ucfirst($plan->objectif);
     });
   </script>
   <script src="meal_notifications.js"></script>
-</body>
-</html>
+
+<?php require_once __DIR__ . '/footer.php'; ?>
+
 

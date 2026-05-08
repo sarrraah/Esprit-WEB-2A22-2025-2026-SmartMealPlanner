@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require_once __DIR__ . '/../../config/Database.php';
 require_once __DIR__ . '/../../model/Plan.php';
@@ -122,102 +122,54 @@ $prevDate = date('Y-m-d', strtotime('-1 day', $ts));
 $nextDate = date('Y-m-d', strtotime('+1 day', $ts));
 $planEnd  = $plan->dateFin ? strtotime($plan->dateFin) : strtotime("+{$plan->duree} days", $startTs);
 
+require_once __DIR__ . '/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Day <?php echo $dayNum; ?> — Smart Meal Planner</title>
-  <link href="<?php echo $assetPrefix; ?>img/favicon.jpg" rel="icon">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="<?php echo $assetPrefix; ?>css/main.css" rel="stylesheet">
-  <style>
-    body { background: #f8f9fa; font-size: 1rem; }
-    .dp-wrap  { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-    .dp-card  { background: #fff; border-radius: 16px; border: 1px solid #f0f0f0; padding: 1.75rem; }
 
-    /* Sidebar */
-    .vp-sidebar h3  { font-size: 1.2rem; font-weight: 700; }
-    .vp-meta-label  { font-size: .85rem; color: #999; margin-bottom: .1rem; }
-    .vp-meta-val    { font-size: 1rem; font-weight: 600; }
-    .vp-badge       { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: .85rem; font-weight: 600; padding: .2rem .7rem; border-radius: 20px; }
-    .progress-track { height: 10px; border-radius: 5px; background: #f0f0f0; overflow: hidden; }
-    .progress-fill  { height: 10px; border-radius: 5px; background: #ce1212; }
-    .tip-box        { background: #fff8f8; border-radius: 10px; padding: 1rem; font-size: .95rem; }
+<style>
+  body { background: #f8f9fa; font-size: 1rem; }
+  .dp-wrap  { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  .dp-card  { background: #fff; border-radius: 16px; border: 1px solid #f0f0f0; padding: 1.75rem; }
+  .vp-sidebar h3  { font-size: 1.2rem; font-weight: 700; }
+  .vp-meta-label  { font-size: .85rem; color: #999; margin-bottom: .1rem; }
+  .vp-meta-val    { font-size: 1rem; font-weight: 600; }
+  .vp-badge       { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: .85rem; font-weight: 600; padding: .2rem .7rem; border-radius: 20px; }
+  .progress-track { height: 10px; border-radius: 5px; background: #f0f0f0; overflow: hidden; }
+  .progress-fill  { height: 10px; border-radius: 5px; background: #ce1212; }
+  .tip-box        { background: #fff8f8; border-radius: 10px; padding: 1rem; font-size: .95rem; }
+  .day-nav { display: flex; align-items: center; gap: 1rem; font-size: 1.3rem; font-weight: 700; }
+  .day-nav a { color: #555; text-decoration: none; font-size: 1.1rem; }
+  .day-nav a:hover { color: #ce1212; }
+  .stats-bar { background: #fff8f8; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; }
+  .stat-label { font-size: .85rem; color: #999; }
+  .stat-val   { font-size: 1.15rem; font-weight: 700; color: #212529; }
+  .stat-val.green { color: #2e7d32; }
+  .meal-row { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 0; border-bottom: 1px solid #f5f5f5; }
+  .meal-row:last-child { border-bottom: none; }
+  .meal-img { width: 110px; height: 90px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+  .meal-type-label { font-size: .85rem; color: #888; display: flex; align-items: center; gap: .3rem; margin-bottom: .2rem; }
+  .meal-name { font-size: 1.1rem; font-weight: 700; margin-bottom: .25rem; }
+  .meal-desc { font-size: .9rem; color: #666; margin-bottom: .4rem; }
+  .meal-tag  { display: inline-block; font-size: .8rem; font-weight: 600; padding: .15rem .6rem; border-radius: 20px; }
+  .meal-kcal { font-size: 1.4rem; font-weight: 800; color: #ce1212; white-space: nowrap; }
+  .meal-kcal span { font-size: .85rem; font-weight: 400; color: #999; display: block; }
+  .btn-recipe { border: 1.5px solid #ce1212; color: #ce1212; background: #fff; border-radius: 8px; padding: .4rem 1rem; font-size: .9rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; transition: .2s; white-space: nowrap; }
+  .btn-recipe:hover { background: #ce1212; color: #fff; }
+  .meal-actions { display: flex; flex-direction: column; align-items: flex-end; gap: .75rem; margin-left: auto; flex-shrink: 0; }
+  .nutrient-bar { background: #fff8f8; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .nutrient-item { flex: 1; min-width: 100px; }
+  .nutrient-label { font-size: .85rem; color: #999; margin-bottom: .25rem; }
+  .nutrient-val   { font-size: 1rem; font-weight: 700; }
+  .chat-msg { display:flex; }
+  .chat-bubble { max-width:85%; padding:.6rem .9rem; border-radius:12px; font-size:.88rem; line-height:1.5; }
+  .bot-bubble { background:#f8f9fa; color:#212529; border-radius:4px 12px 12px 12px; }
+  .user-bubble { background:#ce1212; color:#fff; border-radius:12px 4px 12px 12px; margin-left:auto; }
+  .chat-msg.user { justify-content:flex-end; }
+</style>
 
-    /* Day nav */
-    .day-nav { display: flex; align-items: center; gap: 1rem; font-size: 1.3rem; font-weight: 700; }
-    .day-nav a { color: #555; text-decoration: none; font-size: 1.1rem; }
-    .day-nav a:hover { color: #ce1212; }
-
-    /* Stats bar */
-    .stats-bar { background: #fff8f8; border-radius: 12px; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
-    .stat-item { display: flex; align-items: center; gap: .75rem; }
-    .stat-icon { font-size: 1.6rem; }
-    .stat-label { font-size: .85rem; color: #999; }
-    .stat-val   { font-size: 1.15rem; font-weight: 700; color: #212529; }
-    .stat-val.green { color: #2e7d32; }
-
-    /* Meal rows */
-    .meal-row { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 0; border-bottom: 1px solid #f5f5f5; }
-    .meal-row:last-child { border-bottom: none; }
-    .meal-img { width: 110px; height: 90px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
-    .meal-type-label { font-size: .85rem; color: #888; display: flex; align-items: center; gap: .3rem; margin-bottom: .2rem; }
-    .meal-name { font-size: 1.1rem; font-weight: 700; margin-bottom: .25rem; }
-    .meal-desc { font-size: .9rem; color: #666; margin-bottom: .4rem; }
-    .meal-tag  { display: inline-block; font-size: .8rem; font-weight: 600; padding: .15rem .6rem; border-radius: 20px; }
-    .meal-kcal { font-size: 1.4rem; font-weight: 800; color: #ce1212; white-space: nowrap; }
-    .meal-kcal span { font-size: .85rem; font-weight: 400; color: #999; display: block; }
-    .btn-recipe { border: 1.5px solid #ce1212; color: #ce1212; background: #fff; border-radius: 8px; padding: .4rem 1rem; font-size: .9rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; transition: .2s; white-space: nowrap; }
-    .btn-recipe:hover { background: #ce1212; color: #fff; }
-    .meal-actions { display: flex; flex-direction: column; align-items: flex-end; gap: .75rem; margin-left: auto; flex-shrink: 0; }
-
-    /* Nutrient summary */
-    .nutrient-bar { background: #fff8f8; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
-    .nutrient-item { flex: 1; min-width: 100px; }
-    .nutrient-label { font-size: .85rem; color: #999; margin-bottom: .25rem; }
-    .nutrient-val   { font-size: 1rem; font-weight: 700; }
-    .nutrient-track { height: 6px; border-radius: 3px; background: #f0f0f0; overflow: hidden; margin-top: .3rem; }
-    .nutrient-fill  { height: 6px; border-radius: 3px; background: #ce1212; }
-
-    /* Bottom bar */
-    .bottom-bar { background: #fff; border-top: 1px solid #f0f0f0; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-radius: 0 0 16px 16px; margin-top: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    .bottom-bar p { font-size: .95rem; color: #777; margin: 0; }
-
-    /* Chatbot */
-    .chat-msg { display:flex; }
-    .chat-bubble { max-width:85%; padding:.6rem .9rem; border-radius:12px; font-size:.88rem; line-height:1.5; }
-    .bot-bubble { background:#f8f9fa; color:#212529; border-radius:4px 12px 12px 12px; }
-    .user-bubble { background:#ce1212; color:#fff; border-radius:12px 4px 12px 12px; margin-left:auto; }
-    .chat-msg.user { justify-content:flex-end; }
-  </style>
-</head>
-<body>
-
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="index.php" class="logo d-flex align-items-center me-auto me-xl-0">
-        <img src="<?php echo $assetPrefix; ?>img/logo-smp.jpg" alt="SmartMealPlanner" height="44">
-        <h1 class="sitename"><span style="color:#212529;">Smart</span><span style="color:#ce1212;">MealPlanner</span></h1>
-      </a>
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="index.php">Home</a></li>
-          <li><a href="Meals.php">Meals</a></li>
-          <li><a href="Plans.php" class="active">My Plan</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="dp-wrap">
-      <div class="dp-card">
-        <div class="row g-4">
+<main>
+  <div class="dp-wrap">
+    <div class="dp-card">
+      <div class="row g-4">
 
           <!-- ── Sidebar ──────────────────────────────────────── -->
           <div class="col-lg-3 vp-sidebar">
@@ -430,17 +382,8 @@ $planEnd  = $plan->dateFin ? strtotime($plan->dateFin) : strtotime("+{$plan->dur
     </div>
   </main>
 
-  <footer id="footer" class="footer dark-background">
-    <div class="container copyright text-center py-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Smart Meal Planner</strong> <span>All Rights Reserved</span></p>
-    </div>
-  </footer>
-
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  <div id="preloader"></div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="<?php echo $assetPrefix; ?>js/main.js"></script>
   <script>
   // Stats doughnut — 3 segments: target, consumed, remaining
   var statsChartObj = new Chart(document.getElementById('statsChart'), {
@@ -703,6 +646,7 @@ $planEnd  = $plan->dateFin ? strtotime($plan->dateFin) : strtotime("+{$plan->dur
   }
   </script>
   <script src="meal_notifications.js"></script>
-</body>
-</html>
+
+<?php require_once __DIR__ . '/footer.php'; ?>
+
 
