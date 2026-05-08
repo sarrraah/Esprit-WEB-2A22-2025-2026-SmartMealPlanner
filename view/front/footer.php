@@ -25,7 +25,7 @@
         <i class="bi bi-link-45deg icon"></i>
         <div>
           <h4>Liens utiles</h4>
-          <p><a href="interfaceclient.php">Accueil</a></p>
+          <p><a href="../index.php">Accueil</a></p>
           <p><a href="#products">Produits</a></p>
           <p><a href="categories.php">Catégories</a></p>
         </div>
