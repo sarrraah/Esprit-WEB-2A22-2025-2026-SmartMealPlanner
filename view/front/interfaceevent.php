@@ -404,9 +404,10 @@ sort($types);
     <nav id="navmenu" class="navmenu">
       <ul>
         <li><a href="../index.php">Home</a></li>
-        <li><a href="../view/Meals.php">Meals</a></li>
-        <li><a href="#" class="active">Events</a></li>
-        <li><a href="#about">About</a></li>
+        <li><a href="interfaceevent.php" class="active">Events</a></li>
+        <li><a href="produits.php">Shop</a></li>
+        <li><a href="mealplanner.php">Meal Planning</a></li>
+        <li><a href="recettes.php">Recipes</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
       <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -685,32 +686,6 @@ sort($types);
     </div>
   </section>
 
-  <!-- CONTACT -->
-  <section id="contact" class="section light-background">
-    <div class="container section-title">
-      <h2>Contact</h2>
-      <p><span>Get in</span> <span class="description-title">Touch With Us</span></p>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4 text-center mb-4">
-          <i class="bi bi-geo-alt-fill fa-3x mb-3" style="font-size:3rem;color:var(--accent-color,#ce1212)"></i>
-          <h5>Address</h5>
-          <p class="text-muted">Esprit Ghazela, Tunis, Tunisia</p>
-        </div>
-        <div class="col-md-4 text-center mb-4">
-          <i class="bi bi-telephone-fill mb-3" style="font-size:3rem;color:var(--accent-color,#ce1212)"></i>
-          <h5>Phone</h5>
-          <p class="text-muted">+216 50 547 135</p>
-        </div>
-        <div class="col-md-4 text-center mb-4">
-          <i class="bi bi-envelope-fill mb-3" style="font-size:3rem;color:var(--accent-color,#ce1212)"></i>
-          <h5>Email</h5>
-          <p class="text-muted">contact@smartmealplanner.tn</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
 </main>
 
@@ -923,9 +898,51 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- FOOTER — same as friend -->
+<!-- FOOTER -->
 <footer id="footer" class="footer dark-background">
-  <div class="container copyright text-center py-4">
+  <div class="container">
+    <div class="row gy-3">
+      <div class="col-lg-3 col-md-6 d-flex">
+        <i class="bi bi-geo-alt icon"></i>
+        <div class="address">
+          <h4>Address</h4>
+          <p>Esprit Ghazela</p>
+          <p>Ariana, Tunisie</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 d-flex">
+        <i class="bi bi-telephone icon"></i>
+        <div>
+          <h4>Contact</h4>
+          <p>
+            <strong>Phone:</strong> <span>50 547 135</span><br>
+            <strong>Email:</strong> <span>smartmealplanner@gmail.com</span>
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 d-flex">
+        <i class="bi bi-link-45deg icon"></i>
+        <div>
+          <h4>Liens utiles</h4>
+          <ul style="list-style:none;padding:0;margin:0;">
+            <li><a href="../index.php" style="color:#ce1212;">Accueil</a></li>
+            <li><a href="produits.php" style="color:#ce1212;">Produits</a></li>
+            <li><a href="categories.php" style="color:#ce1212;">Catégories</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <h4>Follow Us</h4>
+        <div class="social-links d-flex">
+          <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container copyright text-center mt-4">
     <p>© <span>Copyright</span> <strong class="px-1 sitename">Smart Meal Planner</strong> <span>All Rights Reserved</span></p>
   </div>
 </footer>

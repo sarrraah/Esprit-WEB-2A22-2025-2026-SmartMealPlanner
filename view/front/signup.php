@@ -70,7 +70,7 @@ function sendConfirmationEmail($email, $prenom, $token)
 
     try {
 
-        $verifyLink = "http://localhost:8080/smart-meal-planner/view/front/verify_email.php?token=" . urlencode($token);
+        $verifyLink = "http://localhost/ryhem/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/verify_email.php?token=" . urlencode($token);
 
         $mail->isSMTP();
         $mail->SMTPOptions = [

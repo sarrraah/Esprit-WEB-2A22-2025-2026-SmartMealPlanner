@@ -1,21 +1,19 @@
 <?php
-/**
- * Send order invoice by email via PHPMailer + Gmail SMTP.
- * POST JSON: { prenom, nom, email, method, items: [{nom, quantite, prix}], total }
- */
+
 
 // Suppress any PHP warnings/notices that would corrupt JSON output
 error_reporting(0);
 ini_set('display_errors', 0);
-
+//verifier php mail bien insatller
 $autoload = __DIR__ . '/../../vendor/autoload.php';
 if (!file_exists($autoload)) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'error' => 'autoload not found at: ' . $autoload]);
     exit;
-}
-require_once $autoload;
+} 
 
+require_once $autoload;
+// 1. Charger PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -27,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'error' => 'Method not allowed']);
     exit;
 }
-
+// 2. Lire les données JSON envoyées par le front
 $data    = json_decode(file_get_contents('php://input'), true);
 $prenom  = htmlspecialchars($data['prenom']  ?? '');
 $nom     = htmlspecialchars($data['nom']     ?? '');
@@ -36,6 +34,7 @@ $method  = htmlspecialchars($data['method'] ?? '');
 $phone   = htmlspecialchars($data['phone']  ?? '');
 $items   = $data['items']  ?? [];
 $total   = number_format((float)($data['total'] ?? 0), 2, ',', ' ');
+$userId  = isset($data['user_id']) && $data['user_id'] !== '' ? (int)$data['user_id'] : null;
 $date    = date('d/m/Y H:i');
 $orderNo = strtoupper(substr(md5(uniqid()), 0, 8));
 
@@ -167,19 +166,46 @@ $htmlBody = '
 </body>
 </html>';
 
-// ── Send via PHPMailer ───────────────────────────────────────────────────────
+// ── Save order to DB for personalization ──────────────────────────────────
+if ($userId && !empty($items)) {
+    try {
+        require_once __DIR__ . '/../../config.php';
+        $db = config::getConnexion();
+        // Auto-create table if not exists
+        $db->exec("CREATE TABLE IF NOT EXISTS commande_item (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            id_produit INT NOT NULL,
+            quantite INT NOT NULL DEFAULT 1,
+            order_no VARCHAR(20),
+            created_at DATETIME DEFAULT NOW(),
+            INDEX(user_id),
+            INDEX(id_produit)
+        )");
+        $stmt = $db->prepare("INSERT INTO commande_item (user_id, id_produit, quantite, order_no) VALUES (:uid, :pid, :qty, :ono)");
+        foreach ($items as $item) {
+            $pid = (int)($item['id'] ?? 0);
+            $qty = (int)($item['quantite'] ?? 1);
+            if ($pid > 0) {
+                $stmt->execute(['uid' => $userId, 'pid' => $pid, 'qty' => $qty, 'ono' => $orderNo]);
+            }
+        }
+    } catch (Exception $e) { /* silent — don't block invoice */ }
+}
+
+// ── Send via PHPMailer ────────────────────────────────────────────────────
 $mail = new PHPMailer(true);
 
 try {
-  
+  //parametre smtp
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = 'smartmealplanner22@gmail.com';
-    $mail->Password   = 'hkyd hyqz mmnt qfjh';
+    $mail->Password   = 'hkyd hyqz mmnt qfjh';//mdps de app gmail permet  a phpmailer de s'aunthentifier sur hmail sans exposer le vrai mdps
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
-
+// 6. Définir expéditeur, destinataire et contenu
     $mail->setFrom('smartmealplanner22@gmail.com', 'SmartMeal Planner');
     $mail->addAddress($email, $prenom . ' ' . $nom);
     $mail->addReplyTo('smartmealplanner22@gmail.com', 'SmartMeal Planner');
@@ -189,10 +215,11 @@ try {
     $mail->Subject = '✅ Order Confirmed #' . $orderNo . ' — SmartMeal Planner';
     $mail->Body    = $htmlBody;
     $mail->AltBody = 'Thank you ' . $prenom . ' ' . $nom . '! Your order #' . $orderNo . ' has been confirmed. Total: ' . $total . ' DT.';
-
+/ 7. Envoyer et retourner le résultat 
+//email envpyer au client en cas dechec
     $mail->send();
     echo json_encode(['success' => true, 'order' => $orderNo]);
 
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'error' => $mail->ErrorInfo]);
+    echo json_encode(['success' => false, 'error' => $mail->ErrorInfo]);//réponse JSON envoyé à l'adresse du client. En cas d'échec
 }

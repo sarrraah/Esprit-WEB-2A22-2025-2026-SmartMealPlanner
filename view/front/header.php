@@ -1,9 +1,30 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_hUserId  = $_SESSION['user_id'] ?? '';
+$_hNom     = '';
+$_hPrenom  = '';
+$_hPicture = 'default.png';
+if ($_hUserId !== '') {
+  try {
+    require_once __DIR__ . '/../../config.php';
+    $pdo = config::getConnexion();
+    $stmt = $pdo->prepare("SELECT nom, prenom, profile_picture FROM user WHERE id = :id");
+    $stmt->execute(['id' => $_hUserId]);
+    $u = $stmt->fetch();
+    if ($u) {
+      $_hNom     = $u['nom'];
+      $_hPrenom  = $u['prenom'];
+      $_hPicture = $u['profile_picture'] ?? 'default.png';
+    }
+  } catch (Exception $e) {}
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Meal Planner - Shop</title>
+  <title>Smart Meal Planner</title>
   <link href="../assets/template/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="../assets/template/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="../assets/template/vendor/aos/aos.css" rel="stylesheet">
@@ -14,26 +35,43 @@
 <body class="index-page">
 <header id="header" class="header d-flex align-items-center sticky-top">
   <div class="container position-relative d-flex align-items-center justify-content-between">
-    <a href="interfaceclient.php" class="logo d-flex align-items-center me-auto me-xl-0">
-      <h1 class="sitename">Smart Meal Planner</h1><span>.</span>
+    <a href="../index.php" class="logo d-flex align-items-center me-auto me-xl-0" style="gap:6px;">
+      <img src="../assets/img/logo-smp.jpg" alt="SmartMealPlanner" style="height:42px;width:auto;">
+      <span class="fw-bold" style="font-size:1.25rem;color:#2d2d2d;letter-spacing:0;">SmartMealPlanner</span>
     </a>
 <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
     <nav id="navmenu" class="navmenu">
       <ul>
-        <li><a href="interfaceclient.php" <?= $currentPage === 'interfaceclient.php' ? 'class="active"' : '' ?>>Home</a></li>
-        <li><a href="produits.php" <?= $currentPage === 'produits.php' ? 'class="active"' : '' ?>>Produits</a></li>
-        <li><a href="categories.php" <?= $currentPage === 'categories.php' ? 'class="active"' : '' ?>>Catégories</a></li>
-        <li><a href="#evenements" <?= $currentPage === 'evenements.php' ? 'class="active"' : '' ?>>Événements</a></li>
-        <li><a href="#mealplanner" <?= $currentPage === 'mealplanner.php' ? 'class="active"' : '' ?>>Meal Planner</a></li>
-        <li><a href="#recettes" <?= $currentPage === 'recettes.php' ? 'class="active"' : '' ?>>Recettes</a></li>
+        <li><a href="../index.php" <?= $currentPage === 'index.php' ? 'class="active"' : '' ?>>Home</a></li>
+        <li><a href="interfaceevent.php" <?= $currentPage === 'interfaceevent.php' ? 'class="active"' : '' ?>>Events</a></li>
+        <li><a href="produits.php" <?= $currentPage === 'produits.php' ? 'class="active"' : '' ?>>Shop</a></li>
+        <li><a href="mealplanner.php" <?= $currentPage === 'mealplanner.php' ? 'class="active"' : '' ?>>Meal Planning</a></li>
+        <li><a href="recettes.php" <?= $currentPage === 'recettes.php' ? 'class="active"' : '' ?>>Recipes</a></li>
         <li><a href="#footer">Contact</a></li>
       </ul>
       <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
     </nav>
-    <button class="btn-getstarted position-relative" onclick="ouvrirPanier()" style="border:none;cursor:pointer;">
+
+    <!-- User account -->
+    <div class="d-flex align-items-center gap-2 ms-3">
+      <?php if ($_hUserId !== ''): ?>
+        <a href="profile.php" class="d-flex flex-column align-items-center text-decoration-none" style="line-height:1.1;">
+          <img src="../assets/img/profiles/<?= htmlspecialchars($_hPicture) ?>"
+               alt="Profile"
+               style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+          <small style="font-size:0.7rem;color:#ce1212;font-weight:600;">
+            <?= htmlspecialchars(trim($_hNom . ' ' . $_hPrenom) ?: 'User') ?>
+          </small>
+        </a>
+        <a href="logout.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Logout</a>
+      <?php else: ?>
+        <a href="signin.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Sign In</a>
+      <?php endif; ?>
+    </div>
+
+    <button class="btn-getstarted position-relative ms-2" onclick="ouvrirPanier()" style="border:none;cursor:pointer;">
       🛒 <span id="panier-badge" style="display:none;position:absolute;top:-6px;right:-6px;background:#fff;color:#c0392b;border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;line-height:18px;text-align:center;">0</span>
     </button>
-<<<<<<< HEAD
     <button onclick="ouvrirWishlist()" title="My Wishlist"
       style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#ce1212;position:relative;margin-left:6px;padding:4px 8px;">
       <i class="bi bi-heart-fill"></i>
@@ -152,8 +190,6 @@ function soumettreReclamation(e) {
   }, 3000);
 }
 </script>
-=======
   </div>
 </header>
 <main class="main">
->>>>>>> d88cae3e3c49685e750a1667bd339e4e111ac1b4

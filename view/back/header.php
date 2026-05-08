@@ -210,34 +210,140 @@
     <div class="sub">Admin</div>
   </div>
   <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
+
+  <!-- Determine active section -->
+  <?php
+  $shopPages    = ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php','afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php','afficherAvis.php','supprimerAvis.php','afficherReclamations.php'];
+  $eventPages   = ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php','listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php','listCommentaires.php'];
+  $mealPages    = ['afficherMeal.php','ajouterMeal.php','modifierMeal.php'];
+  $recipePages  = ['afficherRecette.php','ajouterRecette.php','modifierRecette.php'];
+
+  $activeSection = '';
+  if (in_array($currentPage, $shopPages))   $activeSection = 'shop';
+  if (in_array($currentPage, $eventPages))  $activeSection = 'events';
+  if (in_array($currentPage, $mealPages))   $activeSection = 'meal';
+  if (in_array($currentPage, $recipePages)) $activeSection = 'recipes';
+  ?>
+
+  <style>
+    /* Accordion nav */
+    .nav-group { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-group-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px;
+      color: #ccc;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      user-select: none;
+    }
+    .nav-group-header:hover { background: rgba(231,76,60,0.1); color: #fff; border-left-color: #e74c3c; }
+    .nav-group-header.open  { color: #e74c3c; border-left-color: #e74c3c; background: rgba(231,76,60,0.08); }
+    .nav-group-header .nav-group-left { display: flex; align-items: center; gap: 10px; }
+    .nav-group-header i.chevron { font-size: 0.65rem; transition: transform 0.25s; }
+    .nav-group-header.open i.chevron { transform: rotate(180deg); }
+
+    .nav-group-body { display: none; background: rgba(0,0,0,0.15); }
+    .nav-group-body.open { display: block; }
+    .nav-group-body a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 18px 8px 36px;
+      color: #aaa;
+      text-decoration: none;
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .nav-group-body a:hover { background: rgba(231,76,60,0.1); color: #fff; border-left-color: #e74c3c; }
+    .nav-group-body a.active { background: #e74c3c; color: #fff; border-left-color: #e74c3c; font-weight: 700; }
+  </style>
+
   <nav>
-    <div class="nav-section">Shop</div>
-    <a href="afficherProduit.php"
-       class="<?= in_array($currentPage, ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php']) ? 'active' : '' ?>">
-      <i class="bi bi-box-seam"></i> Products
-    </a>
-    <a href="afficherCategorie.php"
-       class="<?= in_array($currentPage, ['afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php']) ? 'active' : '' ?>">
-      <i class="bi bi-tags"></i> Categories
-    </a>
-    <a href="afficherAvis.php"
-       class="<?= in_array($currentPage, ['afficherAvis.php','supprimerAvis.php']) ? 'active' : '' ?>">
-      <i class="bi bi-chat-square-text"></i> Avis
-    </a>
-    <div class="nav-section">Content</div>
-    <a href="#"><i class="bi bi-calendar-event"></i> Events</a>
-    <a href="#"><i class="bi bi-journal-text"></i> Meal Planner</a>
-    <a href="#"><i class="bi bi-book"></i> Recipes</a>
-    <div class="nav-section">System</div>
-    <a href="#"><i class="bi bi-bar-chart"></i> Statistics</a>
-    <a href="#"><i class="bi bi-people"></i> Users</a>
-    <a href="afficherReclamations.php"
-       class="<?= $currentPage === 'afficherReclamations.php' ? 'active' : '' ?>">
-      <i class="bi bi-megaphone"></i> Complaints
-    </a>
+    <!-- SHOP -->
+    <div class="nav-group">
+      <div class="nav-group-header <?= $activeSection === 'shop' ? 'open' : '' ?>" onclick="toggleNav(this)">
+        <span class="nav-group-left"><i class="bi bi-shop"></i> Shop</span>
+        <i class="bi bi-chevron-down chevron"></i>
+      </div>
+      <div class="nav-group-body <?= $activeSection === 'shop' ? 'open' : '' ?>">
+        <a href="afficherProduit.php" class="<?= in_array($currentPage, ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php']) ? 'active' : '' ?>">
+          <i class="bi bi-box-seam"></i> Products
+        </a>
+        <a href="afficherCategorie.php" class="<?= in_array($currentPage, ['afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php']) ? 'active' : '' ?>">
+          <i class="bi bi-tags"></i> Categories
+        </a>
+        <a href="afficherAvis.php" class="<?= in_array($currentPage, ['afficherAvis.php','supprimerAvis.php']) ? 'active' : '' ?>">
+          <i class="bi bi-chat-square-text"></i> Reviews
+        </a>
+        <a href="afficherReclamations.php" class="<?= $currentPage === 'afficherReclamations.php' ? 'active' : '' ?>">
+          <i class="bi bi-megaphone"></i> Complaints
+        </a>
+      </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="nav-group">
+      <div class="nav-group-header <?= $activeSection === 'events' ? 'open' : '' ?>" onclick="toggleNav(this)">
+        <span class="nav-group-left"><i class="bi bi-calendar-event"></i> Events</span>
+        <i class="bi bi-chevron-down chevron"></i>
+      </div>
+      <div class="nav-group-body <?= $activeSection === 'events' ? 'open' : '' ?>">
+        <a href="listEvenements.php" class="<?= in_array($currentPage, ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php']) ? 'active' : '' ?>">
+          <i class="bi bi-calendar3"></i> Events
+        </a>
+        <a href="listParticipations.php" class="<?= in_array($currentPage, ['listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php']) ? 'active' : '' ?>">
+          <i class="bi bi-people"></i> Participations
+        </a>
+        <a href="listCommentaires.php" class="<?= $currentPage === 'listCommentaires.php' ? 'active' : '' ?>">
+          <i class="bi bi-chat-dots"></i> Comments
+        </a>
+        <a href="listPromoCodes.php" class="<?= $currentPage === 'listPromoCodes.php' ? 'active' : '' ?>">
+          <i class="bi bi-ticket-perforated"></i> Discount Codes
+        </a>
+      </div>
+    </div>
+
+    <!-- MEAL PLANNING -->
+    <div class="nav-group">
+      <div class="nav-group-header" style="cursor:default;opacity:0.6;">
+        <span class="nav-group-left"><i class="bi bi-journal-text"></i> Meal Planning</span>
+        <i class="bi bi-chevron-down chevron"></i>
+      </div>
+    </div>
+
+    <!-- RECIPES -->
+    <div class="nav-group">
+      <div class="nav-group-header" style="cursor:default;opacity:0.6;">
+        <span class="nav-group-left"><i class="bi bi-book"></i> Recipes</span>
+        <i class="bi bi-chevron-down chevron"></i>
+      </div>
+    </div>
   </nav>
+
+  <script>
+  function toggleNav(header) {
+    var body = header.nextElementSibling;
+    var isOpen = header.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.nav-group-header').forEach(function(h) {
+      h.classList.remove('open');
+      if (h.nextElementSibling) h.nextElementSibling.classList.remove('open');
+    });
+    // Open clicked if it was closed
+    if (!isOpen && body) {
+      header.classList.add('open');
+      body.classList.add('open');
+    }
+  }
+  </script>
   <div class="front-btn">
-    <a href="../front/interfaceclient.php">
+    <a href="../index.php">
       <i class="bi bi-arrow-left-circle"></i> Front Office
     </a>
   </div>

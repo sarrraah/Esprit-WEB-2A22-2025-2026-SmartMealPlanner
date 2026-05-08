@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
             }
 
-            header("Location: index.php?login=success");
+            header("Location: interfaceclient.php");
             exit();
         } else {
             $error = "Your account is not available right now.";

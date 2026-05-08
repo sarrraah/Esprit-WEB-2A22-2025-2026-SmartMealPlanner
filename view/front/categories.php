@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../controller/CategorieController.php';
 require_once __DIR__ . '/../../controller/ProduitController.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_catUserId = $_SESSION['user_id'] ?? 'guest';
 
 $categorieController = new CategorieController();
 $produitController   = new ProduitController();
@@ -328,8 +330,9 @@ document.querySelectorAll('.btn-ajouter-panier').forEach(function(btn){btn.addEv
 updateBadge();
 
 // ── WISHLIST ──
-function getWishlist(){return JSON.parse(localStorage.getItem('wishlist')||'[]');}
-function saveWishlist(w){localStorage.setItem('wishlist',JSON.stringify(w));updateWishlistBadge();}
+var _WISH_KEY = 'wishlist_<?= $_catUserId ?>';
+function getWishlist(){return JSON.parse(localStorage.getItem(_WISH_KEY)||'[]');}
+function saveWishlist(w){localStorage.setItem(_WISH_KEY,JSON.stringify(w));updateWishlistBadge();}
 function updateWishlistBadge(){var c=getWishlist().length;var b=document.getElementById('wishlist-badge');if(b){b.textContent=c;b.style.display=c>0?'inline-block':'none';}}
 function toggleWishlist(btn){
   var id=btn.dataset.id,nom=btn.dataset.nom,prix=parseFloat(btn.dataset.prix),image=btn.dataset.image;
@@ -654,8 +657,8 @@ var ACH_TIERS = [
   { id: 6, target: 75,  discount: 70 },
   { id: 7, target: 100, discount: 80 }
 ];
-function getMealsCount() { return parseInt(localStorage.getItem('smp_meals_count') || '0', 10); }
-function setMealsCount(n) { localStorage.setItem('smp_meals_count', n); }
+function getMealsCount() { return parseInt(localStorage.getItem('smp_meals_count_<?= $_catUserId ?>') || '0', 10); }
+function setMealsCount(n) { localStorage.setItem('smp_meals_count_<?= $_catUserId ?>', n); }
 function getActiveDiscount() {
   var count = getMealsCount(), discount = 0;
   ACH_TIERS.forEach(function(t) { if (count >= t.target) discount = t.discount; });
@@ -1334,8 +1337,8 @@ function updateBadge(){var t=JSON.parse(localStorage.getItem('panier')||'[]').re
 // ── Panier & Wishlist functions for categories list page ──
 function getPanier(){return JSON.parse(localStorage.getItem('panier')||'[]');}
 function savePanier(p){localStorage.setItem('panier',JSON.stringify(p));updateBadge();}
-function getWishlist(){return JSON.parse(localStorage.getItem('wishlist')||'[]');}
-function saveWishlist(w){localStorage.setItem('wishlist',JSON.stringify(w));updateWishlistBadge();}
+function getWishlist(){return JSON.parse(localStorage.getItem(_WISH_KEY)||'[]');}
+function saveWishlist(w){localStorage.setItem(_WISH_KEY,JSON.stringify(w));updateWishlistBadge();}
 function updateWishlistBadge(){var c=getWishlist().length;var b=document.getElementById('wishlist-badge');if(b){b.textContent=c;b.style.display=c>0?'inline-block':'none';}}
 
 function ouvrirPanier(){
@@ -1743,8 +1746,8 @@ function confirmerCommandeCat(e) {
     }
   },{once:true});
 }
-function getMealsCount(){return parseInt(localStorage.getItem('smp_meals_count')||'0',10);}
-function setMealsCount(n){localStorage.setItem('smp_meals_count',n);}
+function getMealsCount(){return parseInt(localStorage.getItem('smp_meals_count_<?= $_catUserId ?>')||'0',10);}
+function setMealsCount(n){localStorage.setItem('smp_meals_count_<?= $_catUserId ?>',n);}
 </script>
 
 <!-- ── ORDER SUCCESS TOAST (categories list) ── -->

@@ -40,14 +40,13 @@ $events = $pdo->query("SELECT id_event, titre FROM evenement ORDER BY titre")->f
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestion Commentaires – Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#fff5f5;color:#1a0505;min-height:100vh}
-nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
-.logo{font-size:18px;font-weight:600;color:#1a0505;text-decoration:none}.logo span{color:#b91c1c}
-.nav-links a{font-size:14px;color:#9a3535;text-decoration:none;font-weight:500;margin-left:24px}
-.nav-links a:hover{color:#b91c1c}
-.container{max-width:1000px;margin:0 auto;padding:32px}
+body{font-family:'Inter',sans-serif;background:#fff5f5;color:#1a0505;min-height:100vh;display:flex;}
+.admin-shell{display:flex;width:100%;min-height:100vh;}
+.main-area{flex:1;padding:32px;overflow-y:auto;}
+.container{max-width:1000px;margin:0 auto;}
 h1{font-size:22px;font-weight:600;margin-bottom:24px}
 .card{background:#fff;border:1px solid #fde8e8;border-radius:14px;padding:24px;margin-bottom:24px}
 .card h2{font-size:15px;font-weight:600;margin-bottom:16px;border-bottom:1px solid #fce8e8;padding-bottom:12px}
@@ -70,16 +69,9 @@ tr:hover td{background:#fff5f5}
 </style>
 </head>
 <body>
-<nav>
-  <a href="listEvenements.php" class="logo">Event <span>Admin</span></a>
-  <div class="nav-links">
-    <a href="listEvenements.php">Événements</a>
-    <a href="listParticipations.php">Participations</a>
-    <a href="listPromoCodes.php">Codes Promo</a>
-    <a href="listCommentaires.php" style="color:#b91c1c">Commentaires</a>
-  </div>
-</nav>
-
+<div class="admin-shell">
+  <?php include 'sidebar.php'; ?>
+  <main class="main-area">
 <div class="container">
   <h1>💬 Gestion des Commentaires
     <span class="total-badge"><?= count($comments) ?></span>
@@ -142,6 +134,8 @@ tr:hover td{background:#fff5f5}
     </table>
     <?php endif; ?>
   </div>
+</div>
+  </main>
 </div>
 </body>
 </html>

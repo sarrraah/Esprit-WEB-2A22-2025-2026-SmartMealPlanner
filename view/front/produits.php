@@ -195,6 +195,15 @@ include("header.php");
              class="btn-browse">
             <i class="bi bi-grid-3x3-gap-fill me-1"></i> Browse products
           </a>
+          <a href="categories.php"
+             style="display:inline-flex;align-items:center;gap:6px;background:white;color:#ce1212;
+                    border:2px solid #ce1212;padding:11px 22px;border-radius:25px;
+                    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+                    text-decoration:none;transition:0.3s;"
+             onmouseover="this.style.background='#fff0f0'"
+             onmouseout="this.style.background='white'">
+            <i class="bi bi-tags-fill"></i> Categories
+          </a>
           <a href="#ai-reco-section"
              onclick="event.preventDefault();scrollToReco()"
              style="display:inline-flex;align-items:center;gap:6px;background:white;color:#ce1212;
@@ -824,9 +833,33 @@ function ouvrirPanier() {
   var instance = bootstrap.Modal.getInstance(panierEl) || new bootstrap.Modal(panierEl);
   instance.show();
 }
-function changerQte(id,delta) {
-  var panier = getPanier(), item = panier.find(function(p){ return p.id===id; });
-  if (item) { item.quantite += delta; if (item.quantite <= 0) panier = panier.filter(function(p){ return p.id!==id; }); }
+function changerQte(id, delta) {
+  var panier = getPanier();
+  var item = panier.find(function(p){ return p.id === id; });
+  if (item) {
+    var newQte = item.quantite + delta;
+    if (newQte <= 0) {
+      panier = panier.filter(function(p){ return p.id !== id; });
+    } else {
+      // Check stock limit
+      var dataEl = document.querySelector('.product-data[data-id="' + id + '"]');
+      var stockMax = dataEl ? (parseInt(dataEl.dataset.stock) || 999) : 999;
+      if (newQte > stockMax) {
+        // Show inline warning on the + button
+        var contenu = document.getElementById('panier-contenu');
+        var prev = document.getElementById('panier-qte-warn');
+        if (prev) prev.remove();
+        var warn = document.createElement('div');
+        warn.id = 'panier-qte-warn';
+        warn.style.cssText = 'background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:0.82rem;color:#856404;';
+        warn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i><strong>' + item.nom + '</strong> : il ne reste que <strong>' + stockMax + '</strong> en stock.';
+        contenu.insertAdjacentElement('afterbegin', warn);
+        setTimeout(function(){ if(warn.parentNode) warn.remove(); }, 3000);
+        return; // Don't update quantity
+      }
+      item.quantite = newQte;
+    }
+  }
   savePanier(panier); ouvrirPanier();
 }
 function supprimerArticle(id) { savePanier(getPanier().filter(function(p){ return p.id!==id; })); ouvrirPanier(); }
@@ -1081,7 +1114,7 @@ function loadRecommendations() {
   error.style.display   = 'none';
   if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
 
-  fetch('get_recommendations.php')
+  fetch('get_recommendations.php?user_id=<?= $_SESSION['user_id'] ?? '' ?>&t=' + Date.now())
     .then(function(r) { return r.json(); })
     .then(function(data) {
       loading.style.display = 'none';
@@ -1352,10 +1385,10 @@ var ACH_TIERS = [
 ];
 
 function getMealsCount() {
-  return parseInt(localStorage.getItem('smp_meals_count') || '0', 10);
+  return parseInt(localStorage.getItem('smp_meals_count_<?= $_SESSION['user_id'] ?? 'guest' ?>') || '0', 10);
 }
 function setMealsCount(n) {
-  localStorage.setItem('smp_meals_count', n);
+  localStorage.setItem('smp_meals_count_<?= $_SESSION['user_id'] ?? 'guest' ?>', n);
 }
 
 function getActiveDiscount() {
@@ -1478,8 +1511,9 @@ function showAchievementToast(tier) {
 document.addEventListener('DOMContentLoaded', function() { updateAchievements(); });
 
 // ── WISHLIST ──
-function getWishlist() { return JSON.parse(localStorage.getItem('wishlist') || '[]'); }
-function saveWishlist(w) { localStorage.setItem('wishlist', JSON.stringify(w)); updateWishlistBadge(); }
+var _WISH_KEY = 'wishlist_<?= $_SESSION['user_id'] ?? 'guest' ?>';
+function getWishlist() { return JSON.parse(localStorage.getItem(_WISH_KEY) || '[]'); }
+function saveWishlist(w) { localStorage.setItem(_WISH_KEY, JSON.stringify(w)); updateWishlistBadge(); }
 
 function updateWishlistBadge() {
   var count = getWishlist().length;
@@ -2401,7 +2435,8 @@ function confirmerCommande(e) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         prenom: prenom, nom: nom, email: email, phone: phone,
-        method: methodLabel, items: invoiceItems, total: total
+        method: methodLabel, items: invoiceItems, total: total,
+        user_id: '<?= $_SESSION['user_id'] ?? '' ?>'
       })
     }).then(function(r){ return r.json(); })
       .then(function(d){ console.log('[Invoice]', d); })
