@@ -61,7 +61,7 @@ class config
     private static function runMigrations(PDO $pdo): void
     {
         try {
-            // Ajouter video_youtube si elle n'existe pas encore
+            // 1. Ajouter video_youtube si elle n'existe pas encore
             $col = $pdo->query("SHOW COLUMNS FROM recette_repas LIKE 'video_youtube'");
             if ($col->rowCount() === 0) {
                 $pdo->exec("ALTER TABLE recette_repas
@@ -69,6 +69,41 @@ class config
                     COMMENT 'ID vidéo YouTube (ex: dQw4w9WgXcQ)'
                     AFTER image_recette");
             }
+
+            // 2. Ajouter description à recette_repas si absente
+            $col2 = $pdo->query("SHOW COLUMNS FROM recette_repas LIKE 'description'");
+            if ($col2->rowCount() === 0) {
+                $pdo->exec("ALTER TABLE recette_repas
+                    ADD COLUMN description TEXT NULL
+                    COMMENT 'Description courte de la recette'
+                    AFTER nom_recette");
+            }
+
+            // 3. Ajouter ingredients à recette_repas si absente
+            $col3 = $pdo->query("SHOW COLUMNS FROM recette_repas LIKE 'ingredients'");
+            if ($col3->rowCount() === 0) {
+                $pdo->exec("ALTER TABLE recette_repas
+                    ADD COLUMN ingredients TEXT NULL
+                    COMMENT 'Liste des ingrédients en texte libre'
+                    AFTER image_recette");
+            }
+
+            // 4. Ajouter id_categorie à repas si absente
+            $col4 = $pdo->query("SHOW COLUMNS FROM repas LIKE 'id_categorie'");
+            if ($col4->rowCount() === 0) {
+                $pdo->exec("ALTER TABLE repas
+                    ADD COLUMN id_categorie INT NULL DEFAULT NULL
+                    AFTER type_repas");
+            }
+
+            // 5. Ajouter id_recette à ingredient si absente
+            $col5 = $pdo->query("SHOW COLUMNS FROM ingredient LIKE 'id_recette'");
+            if ($col5->rowCount() === 0) {
+                $pdo->exec("ALTER TABLE ingredient
+                    ADD COLUMN id_recette INT NULL DEFAULT NULL
+                    AFTER id_repas");
+            }
+
         } catch (\Exception $e) {
             // Silencieux : la migration sera retentée à la prochaine requête
         }
