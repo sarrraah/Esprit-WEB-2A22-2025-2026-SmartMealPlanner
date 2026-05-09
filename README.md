@@ -31,10 +31,19 @@ De nombreuses personnes rencontrent des difficultés à :
 
 #### Back Office
 - Gestion des utilisateurs
-- Gestion des repas et recettes
+- Gestion des repas et repas
 - Gestion des aliments durables
 - Tableau de bord avec statistiques
 - Gestion du contenu nutritionnel
+
+#### Catégories de Repas
+Les repas sont classés dans la table `categorie_repas` de la base de données afin de faciliter la recherche et la gestion.
+
+Catégories par défaut :
+- Entrée
+- Plat principal
+- Dessert
+- Boisson
 
 ## Tech Stack
 
@@ -55,7 +64,7 @@ Le backend sera développé ultérieurement pour gérer :
 L’application repose sur une architecture web en deux parties :
 
 - **Front Office** : interface utilisateur destinée aux utilisateurs finaux (navigation, test nutritionnel, affichage des résultats)
-- **Back Office** : interface d’administration permettant la gestion des utilisateurs, des repas, des recettes et des données nutritionnelles
+- **Back Office** : interface d’administration permettant la gestion des utilisateurs, des repas et des données nutritionnelles
 - Le Front Office communique avec le Back Office via des requêtes HTTP (API).
 
 
@@ -85,7 +94,10 @@ cd Esprit-WEB-2A22-2025-2026-SmartMealPlanner
 ```
 
 ## Utilisation
-Les instructions d’utilisation seront définies après l’implémentation des fonctionnalités principales.
+1. Ouvrez `view/front/repas.php` pour afficher et supprimer les repas côté utilisateur.
+2. Ouvrez `view/front/add_repas.php` pour ajouter un nouveau repas.
+3. Ouvrez `view/back/repas.php` pour gérer les repas depuis le back office.
+4. Utilisez `controller/RepasController.php` pour les opérations de création, mise à jour et suppression.
 
 
 ## Acknowledgments
