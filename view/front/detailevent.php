@@ -7,6 +7,27 @@ $e    = $ctrl->getEvenementById($id);
 
 if (!$e) { header('Location: interfaceevent.php'); exit; }
 
+// ── User session ──────────────────────────────────────────────────────
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_hUserId = $_SESSION['user_id'] ?? '';
+$_hEmail  = '';
+$_hNom    = '';
+$_hPrenom = '';
+if ($_hUserId !== '') {
+  try {
+    require_once __DIR__ . '/../../config.php';
+    $pdo  = config::getConnexion();
+    $stmt = $pdo->prepare("SELECT email, nom, prenom FROM user WHERE id = :id");
+    $stmt->execute(['id' => $_hUserId]);
+    $u = $stmt->fetch();
+    if ($u) {
+      $_hEmail  = $u['email']  ?? '';
+      $_hNom    = $u['nom']    ?? '';
+      $_hPrenom = $u['prenom'] ?? '';
+    }
+  } catch (Exception $ex) {}
+}
+
 $typeConfig = [
     'Conférence'  => ['from' => '#fce8e8', 'to' => '#f7c1c1', 'emoji' => '🎤'],
     'Atelier'     => ['from' => '#fde8e8', 'to' => '#f09595', 'emoji' => '🛠️'],
@@ -1043,12 +1064,12 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="co-group">
             <label class="co-label">Prénom *</label>
-            <input class="co-input" id="co-prenom" placeholder="Ahmed">
+            <input class="co-input" id="co-prenom" placeholder="Ahmed" value="<?= htmlspecialchars($_hPrenom) ?>">
             <div class="co-err" id="err-co-prenom">Prénom requis (min 2 car.)</div>
           </div>
           <div class="co-group">
             <label class="co-label">Nom *</label>
-            <input class="co-input" id="co-nom" placeholder="Ben Ali">
+            <input class="co-input" id="co-nom" placeholder="Ben Ali" value="<?= htmlspecialchars($_hNom) ?>">
             <div class="co-err" id="err-co-nom">Nom requis (min 2 car.)</div>
           </div>
         </div>
@@ -1056,7 +1077,9 @@ nav{background:#fff;border-bottom:1.5px solid #f7c1c1;padding:0 32px;display:fle
         <!-- Email -->
         <div class="co-group">
           <label class="co-label">Email *</label>
-          <input class="co-input" id="co-email" type="email" placeholder="ahmed@email.com">
+          <input class="co-input" id="co-email" type="email" placeholder="ahmed@email.com"
+                 value="<?= htmlspecialchars($_hEmail) ?>"
+                 <?= $_hEmail ? 'readonly style="background:#fdf5f5;color:#9a3535;"' : '' ?>>
           <div class="co-err" id="err-co-email">Email invalide</div>
         </div>
 

@@ -29,17 +29,19 @@ $_hUserId  = $_SESSION['user_id'] ?? '';
 $_hNom     = '';
 $_hPrenom  = '';
 $_hPicture = 'default.png';
+$_hEmail   = '';
 if ($_hUserId !== '') {
   try {
     require_once __DIR__ . '/../../config.php';
     $pdo = config::getConnexion();
-    $stmt = $pdo->prepare("SELECT nom, prenom, profile_picture FROM user WHERE id = :id");
+    $stmt = $pdo->prepare("SELECT nom, prenom, profile_picture, email FROM user WHERE id = :id");
     $stmt->execute(['id' => $_hUserId]);
     $u = $stmt->fetch();
     if ($u) {
       $_hNom     = $u['nom'];
       $_hPrenom  = $u['prenom'];
       $_hPicture = $u['profile_picture'] ?? 'default.png';
+      $_hEmail   = $u['email'] ?? '';
     }
   } catch (Exception $e) {}
 }
@@ -475,35 +477,6 @@ sort($types);
     </div>
   </section>
 
-  <!-- GOALS & REWARDS -->
-  <section id="goals-rewards" class="section py-5" style="background:#fffbf5;">
-    <div class="container section-title">
-      <h2>Goals & Rewards</h2>
-      <p><span>Register</span> <span class="description-title">& Unlock Discounts 🎯</span></p>
-    </div>
-    <div class="container">
-      <div style="background:#fff;border:1px solid #fde8e8;border-radius:16px;padding:28px;max-width:700px;margin:0 auto">
-
-        <!-- Email input -->
-        <div style="margin-bottom:20px">
-          <p style="font-size:14px;color:#666;margin-bottom:12px">Register for events and unlock exclusive discount codes. Enter your email to see your progress.</p>
-          <div style="display:flex;gap:10px">
-            <input type="email" id="goals-email" placeholder="your@email.com"
-              style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:'Inter',sans-serif">
-            <button onclick="loadGoals()" id="goals-check-btn"
-              style="background:#ce1212;color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">
-              Check Progress
-            </button>
-          </div>
-        </div>
-
-        <div id="goals-content">
-          <!-- filled by JS -->
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- AI RECOMMENDATIONS -->
   <section id="ai-picks" class="section py-5" style="background:#fff;">
     <div class="container section-title">
@@ -521,9 +494,45 @@ sort($types);
             🔄 Refresh
           </button>
         </div>
-        <div id="ai-reco-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px">
+        <div id="ai-reco-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px;margin-top:20px">
           <div style="color:#9a3535;font-size:13px;padding:20px 0">⏳ Loading AI recommendations...</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOALS & REWARDS -->
+  <section id="goals-rewards" class="section py-5" style="background:#fffbf5;">
+    <div class="container section-title">
+      <h2>Goals & Rewards</h2>
+      <p><span>Register</span> <span class="description-title">& Unlock Discounts 🎯</span></p>
+    </div>
+    <div class="container">
+      <div style="background:#fff;border:1px solid #fde8e8;border-radius:16px;padding:32px;display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap">
+
+        <!-- LEFT — email + progress -->
+        <div style="flex:1;min-width:260px">
+          <p style="font-size:14px;color:#666;margin-bottom:14px;line-height:1.6">Register for events and unlock exclusive discount codes. Enter your email to see your progress.</p>
+          <div style="display:flex;gap:10px;margin-bottom:0">
+            <input type="email" id="goals-email" placeholder="your@email.com"
+              value="<?= htmlspecialchars($_hEmail) ?>"
+              <?= $_hEmail ? 'readonly style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:\'Inter\',sans-serif;background:#fdf5f5;color:#9a3535;"' : 'style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:\'Inter\',sans-serif;"' ?>>
+            <button onclick="loadGoals()" id="goals-check-btn"
+              style="background:#ce1212;color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">
+              Check Progress
+            </button>
+          </div>
+          <div id="goals-progress"><!-- progress bar filled by JS --></div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div style="width:1px;background:#fde8e8;align-self:stretch;min-height:120px" class="d-none d-md-block"></div>
+
+        <!-- RIGHT — milestones list -->
+        <div style="flex:1.4;min-width:280px">
+          <div id="goals-content"><!-- milestones filled by JS --></div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -825,7 +834,9 @@ sort($types);
   </div>
 
   <div class="ap-email-form">
-    <input type="email" id="ap-email" placeholder="votre@email.com">
+    <input type="email" id="ap-email" placeholder="votre@email.com"
+           value="<?= htmlspecialchars($_hEmail) ?>"
+           <?= $_hEmail ? 'readonly style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:8px 14px;font-size:13px;outline:none;font-family:inherit;background:#fdf5f5;color:#9a3535;"' : '' ?>>
     <button onclick="loadActivity()" title="Rechercher">🔍</button>
   </div>
 
@@ -839,12 +850,18 @@ function toggleActivityPanel() {
   var panel = document.getElementById('activity-panel');
   panel.classList.toggle('open');
   if (panel.classList.contains('open')) {
-    var saved = localStorage.getItem('smp_user_email');
-    if (saved) {
-      document.getElementById('ap-email').value = saved;
-      loadActivity();
+    var inp = document.getElementById('ap-email');
+    // Use session email (already in value) or fall back to localStorage
+    if (!inp.value.trim()) {
+      var saved = localStorage.getItem('smp_user_email');
+      if (saved) { inp.value = saved; }
     }
-    document.getElementById('ap-email').focus();
+    if (inp.value.trim()) {
+      localStorage.setItem('smp_user_email', inp.value.trim());
+      loadActivity();
+    } else {
+      inp.focus();
+    }
   }
 }
 
@@ -1543,11 +1560,12 @@ document.addEventListener('DOMContentLoaded', function () {
 async function loadGoals() {
   var email   = (document.getElementById('goals-email').value || '').trim();
   var content = document.getElementById('goals-content');
+  var progress= document.getElementById('goals-progress');
   var btn     = document.getElementById('goals-check-btn');
   if (!content) return;
 
   if (!email) {
-    content.innerHTML = '<p style="color:#dc2626;font-size:13px">Please enter your email.</p>';
+    if (progress) progress.innerHTML = '<p style="color:#dc2626;font-size:13px;margin-top:10px">Please enter your email.</p>';
     return;
   }
 
@@ -1561,12 +1579,20 @@ async function loadGoals() {
     var milestones = data.milestones || [];
     var next       = data.next;
 
-    // Progress bar to next milestone
-    var progressHtml = '';
+    // ── LEFT: attended count + progress bar ──
+    var progressHtml = '<div style="margin-top:18px">';
+    progressHtml += `<div style="background:#fff5f5;border:1px solid #fde8e8;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:28px">🎯</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#1a0505">${total} Event${total !== 1 ? 's' : ''} Attended</div>
+          <div style="font-size:12px;color:#9a3535">Keep registering to unlock more rewards!</div>
+        </div>
+      </div>`;
+
     if (next) {
       var pct = Math.round((total / next.count) * 100);
-      progressHtml = `
-        <div style="margin-bottom:20px">
+      progressHtml += `
+        <div>
           <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
             <span style="color:#666">Progress to <strong>${next.emoji} ${next.label}</strong></span>
             <span style="color:#ce1212;font-weight:700">${total} / ${next.count}</span>
@@ -1579,10 +1605,12 @@ async function loadGoals() {
           </p>
         </div>`;
     } else {
-      progressHtml = '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;font-weight:600">🏆 You\'ve unlocked all rewards! You\'re a VIP Attendee!</div>';
+      progressHtml += '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;font-size:13px;color:#166534;font-weight:600">🏆 You\'ve unlocked all rewards! You\'re a VIP Attendee!</div>';
     }
+    progressHtml += '</div>';
+    if (progress) progress.innerHTML = progressHtml;
 
-    // Milestones list
+    // ── RIGHT: milestones list ──
     var shown    = 4;
     var listHtml = milestones.map(function(m, i) {
       var unlocked = m.unlocked;
@@ -1625,19 +1653,12 @@ async function loadGoals() {
       : '';
 
     content.innerHTML = `
-      <div style="background:#fff5f5;border:1px solid #fde8e8;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
-        <span style="font-size:28px">🎯</span>
-        <div>
-          <div style="font-size:15px;font-weight:700;color:#1a0505">${total} Event${total !== 1 ? 's' : ''} Attended</div>
-          <div style="font-size:12px;color:#9a3535">Keep registering to unlock more rewards!</div>
-        </div>
-      </div>
-      ${progressHtml}
+      <div style="font-size:14px;font-weight:700;color:#1a0505;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #fce8e8">🏅 Reward Milestones</div>
       <div id="goals-list">${listHtml}</div>
       ${toggleBtn}`;
 
   } catch(e) {
-    content.innerHTML = '<p style="color:#dc2626;font-size:13px">❌ Could not load progress.</p>';
+    if (progress) progress.innerHTML = '<p style="color:#dc2626;font-size:13px;margin-top:10px">❌ Could not load progress.</p>';
   } finally {
     btn.textContent = 'Check Progress'; btn.disabled = false;
   }
@@ -1668,12 +1689,20 @@ function copyCode(code, el) {
   });
 }
 
-// Auto-load if email in localStorage
+// Auto-load if email in localStorage or from session
 document.addEventListener('DOMContentLoaded', function() {
-  var saved = localStorage.getItem('smp_user_email');
-  if (saved) {
-    var inp = document.getElementById('goals-email');
-    if (inp) { inp.value = saved; loadGoals(); }
+  var inp = document.getElementById('goals-email');
+  if (inp) {
+    // Session email takes priority (already set as value in PHP), then localStorage
+    var sessionEmail = inp.value.trim();
+    if (!sessionEmail) {
+      var saved = localStorage.getItem('smp_user_email');
+      if (saved) { inp.value = saved; }
+    }
+    if (inp.value.trim()) {
+      localStorage.setItem('smp_user_email', inp.value.trim());
+      loadGoals();
+    }
   }
 });
 </script>
@@ -1708,23 +1737,23 @@ async function loadAIRecommendations() {
       var stars  = ev.note > 0 ? '⭐ ' + ev.note.toFixed(1) + '/5' : '';
       var banner = ev.image
         ? '<img src="' + ev.image + '" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">'
-        : '<span style="font-size:36px;opacity:.25">' + (ev.type === 'Conférence' ? '🎤' : ev.type === 'Atelier' ? '🛠️' : ev.type === 'Compétition' ? '🏆' : '📅') + '</span>';
+        : '<span style="font-size:60px;opacity:.25">' + (ev.type === 'Conférence' ? '🎤' : ev.type === 'Atelier' ? '🛠️' : ev.type === 'Compétition' ? '🏆' : '📅') + '</span>';
 
       return '<a href="detailEvent.php?id=' + ev.id + '" style="text-decoration:none;color:inherit">'
-        + '<div style="background:#fff;border:1px solid #fde8e8;border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer" '
-        + 'onmouseover="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 8px 24px rgba(206,18,18,.12)\'" '
+        + '<div style="background:#fff;border:1px solid #fde8e8;border-radius:16px;overflow:hidden;transition:all .2s;cursor:pointer" '
+        + 'onmouseover="this.style.transform=\'translateY(-6px)\';this.style.boxShadow=\'0 16px 40px rgba(206,18,18,.15)\'" '
         + 'onmouseout="this.style.transform=\'\';this.style.boxShadow=\'\'">'
-        + '<div style="height:100px;background:linear-gradient(135deg,' + color + '22,' + color + '44);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">'
+        + '<div style="height:220px;background:linear-gradient(135deg,' + color + '22,' + color + '44);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">'
         + banner
-        + '<span style="position:absolute;top:8px;left:10px;font-size:22px;z-index:1">' + ev.medal + '</span>'
+        + '<span style="position:absolute;top:12px;left:14px;font-size:30px;z-index:1">' + ev.medal + '</span>'
         + '</div>'
-        + '<div style="padding:12px 14px">'
-        + '<div style="font-size:13px;font-weight:700;color:#1a0505;margin-bottom:4px;line-height:1.3">' + ev.titre.replace(/</g,'&lt;') + '</div>'
-        + '<div style="font-size:11px;color:#9a3535;margin-bottom:6px">📅 ' + ev.date + ' · 📍 ' + ev.lieu.replace(/</g,'&lt;') + '</div>'
-        + '<div style="font-size:11px;color:#666;font-style:italic;margin-bottom:8px;line-height:1.4">"' + ev.reason.replace(/</g,'&lt;') + '"</div>'
+        + '<div style="padding:18px 20px">'
+        + '<div style="font-size:15px;font-weight:700;color:#1a0505;margin-bottom:6px;line-height:1.4">' + ev.titre.replace(/</g,'&lt;') + '</div>'
+        + '<div style="font-size:12px;color:#9a3535;margin-bottom:8px">📅 ' + ev.date + ' · 📍 ' + ev.lieu.replace(/</g,'&lt;') + '</div>'
+        + '<div style="font-size:12px;color:#666;font-style:italic;margin-bottom:12px;line-height:1.5">"' + ev.reason.replace(/</g,'&lt;') + '"</div>'
         + '<div style="display:flex;align-items:center;justify-content:space-between">'
         + prix
-        + (stars ? '<span style="font-size:11px;color:#f59e0b">' + stars + '</span>' : '')
+        + (stars ? '<span style="font-size:13px;color:#f59e0b">' + stars + '</span>' : '')
         + '</div>'
         + '</div>'
         + '</div></a>';
