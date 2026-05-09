@@ -87,7 +87,7 @@ if ($loggedInUserId !== '') {
           <li><a href="front/produits.php">Shop</a></li>
           <li><a href="front/Meals.php">Meals</a></li>
           <li><a href="front/Plans.php">My Plan</a></li>
-          <li><a href="front/recettes.php">Recipes</a></li>
+          <li><a href="front/repas.php">Recipes</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -167,6 +167,7 @@ if ($loggedInUserId !== '') {
               <li><a href="#hero" style="color:#ce1212;">Accueil</a></li>
               <li><a href="front/produits.php" style="color:#ce1212;">Produits</a></li>
               <li><a href="front/categories.php" style="color:#ce1212;">Catégories</a></li>
+              <li><a href="front/repas.php" style="color:#ce1212;">Recettes & Repas</a></li>
             </ul>
           </div>
         </div>
