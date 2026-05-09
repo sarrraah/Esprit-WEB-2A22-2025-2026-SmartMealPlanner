@@ -243,16 +243,9 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
 <div class="admin-shell">
     <?php include 'sidebar.php'; ?>
     <main class="main-area">
-        <div class="topbar">
-            <div class="topbar-title">
-                <a class="bo-logo" href="listEvenements.php">Smart Meal Planner<span>.</span></a>
-                <span class="label">Event Dashboard</span>
-                <h1>Events overview</h1>
-                <p>Manage your events, check capacity and jump into participant lists instantly.</p>
-            </div>
-            <div class="topbar-action">
-                <a href="addEvenement.php" class="btn-primary"><i class="bi bi-plus-lg"></i> Add Event</a>
-            </div>
+        <div class="admin-topbar">
+            <h5><i class="bi bi-calendar-event me-2" style="color:#ce1212"></i>Events Overview</h5>
+            <a href="addEvenement.php" class="btn btn-yummy btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Event</a>
         </div>
         <div class="content-wrap">
             <div class="dashboard-banner">

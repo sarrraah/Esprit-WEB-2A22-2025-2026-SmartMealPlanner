@@ -13,7 +13,7 @@ $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . str_replace($docRoot, '', $
 
 $pageTitle  = 'Nos Repas - Smart Meal Planner';
 $activePage = 'repas';
-require_once __DIR__ . '/partials/header.php';
+require_once __DIR__ . '/header.php';
 ?>
 
 <div class="page-title dark-background" data-aos="fade">
@@ -110,4 +110,4 @@ require_once __DIR__ . '/partials/header.php';
     </div>
 </section>
 
-<?php require_once __DIR__ . '/partials/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

@@ -36,9 +36,15 @@ try {
 </head>
 
 <body class="index-page bo-meals-page">
+<style>
+  body { display: flex !important; min-height: 100vh !important; }
+  .bo-layout { display: flex !important; min-height: 100vh !important; width: 100% !important; }
+  .bo-main-content { flex: 1 !important; overflow-y: auto !important; min-width: 0 !important; }
+  .bo-sidebar { display: none !important; }
+</style>
 
 <div class="bo-layout">
-<?php $activePage = 'dashboard'; include __DIR__ . '/meal_sidebar.php'; ?>
+<?php $activePage = 'dashboard'; include __DIR__ . '/partials/sidebar.php'; ?>
 
 <div class="bo-main-content">
 

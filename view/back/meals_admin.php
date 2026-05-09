@@ -35,14 +35,21 @@ foreach ($stats as $type => $count) {
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/css/main.css" rel="stylesheet">
   <link href="/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/css/backoffice-meals.css" rel="stylesheet">
 </head>
 
 <body class="index-page bo-meals-page">
+<style>
+  body { display: flex !important; min-height: 100vh !important; }
+  .bo-layout { display: flex !important; min-height: 100vh !important; width: 100% !important; }
+  .bo-main-content { flex: 1 !important; overflow-y: auto !important; min-width: 0 !important; }
+  .bo-sidebar { display: none !important; }
+</style>
 
 <div class="bo-layout">
-<?php $activePage = 'meals'; include __DIR__ . '/meal_sidebar.php'; ?>
+<?php $activePage = 'meals'; include __DIR__ . '/partials/sidebar.php'; ?>
 
 <div class="bo-main-content">
 

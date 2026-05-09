@@ -38,6 +38,10 @@
         /* Main */
         .admin-main { margin-left:var(--sidebar-width); min-height:100vh; }
 
+        /* Unified sidebar layout override */
+        body.has-unified-sidebar { display:flex !important; }
+        body.has-unified-sidebar .admin-main { margin-left:0 !important; flex:1 !important; min-width:0 !important; }
+
         /* Topbar */
         .admin-topbar {
             background:#fff; border-bottom:2px solid var(--accent);

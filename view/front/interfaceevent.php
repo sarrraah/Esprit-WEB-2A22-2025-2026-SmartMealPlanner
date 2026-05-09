@@ -23,6 +23,27 @@ require_once __DIR__ . '/../../controller/EvenementController.php';
 $ctrl       = new EvenementController();
 $evenements = $ctrl->listEvenements();
 
+// ── User session for header ──────────────────────────────────────────────
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_hUserId  = $_SESSION['user_id'] ?? '';
+$_hNom     = '';
+$_hPrenom  = '';
+$_hPicture = 'default.png';
+if ($_hUserId !== '') {
+  try {
+    require_once __DIR__ . '/../../config.php';
+    $pdo = config::getConnexion();
+    $stmt = $pdo->prepare("SELECT nom, prenom, profile_picture FROM user WHERE id = :id");
+    $stmt->execute(['id' => $_hUserId]);
+    $u = $stmt->fetch();
+    if ($u) {
+      $_hNom     = $u['nom'];
+      $_hPrenom  = $u['prenom'];
+      $_hPicture = $u['profile_picture'] ?? 'default.png';
+    }
+  } catch (Exception $e) {}
+}
+
 $assetPrefix = '../assets/';
 
 $typeConfig = [
@@ -407,13 +428,28 @@ sort($types);
         <li><a href="interfaceevent.php" class="active">Events</a></li>
         <li><a href="produits.php">Shop</a></li>
         <li><a href="mealplanner.php">Meal Planning</a></li>
-        <li><a href="recettes.php">Recipes</a></li>
+        <li><a href="repas.php">Recipes</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
       <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
     </nav>
 
-    <a class="btn-getstarted" href="#events">Browse Events</a>
+    <!-- User account -->
+    <div class="d-flex align-items-center gap-2 ms-3">
+      <?php if ($_hUserId !== ''): ?>
+        <a href="profile.php" class="d-flex flex-column align-items-center text-decoration-none" style="line-height:1.1;">
+          <img src="../assets/img/profiles/<?= htmlspecialchars($_hPicture) ?>"
+               alt="Profile"
+               style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+          <small style="font-size:0.7rem;color:#ce1212;font-weight:600;">
+            <?= htmlspecialchars(trim($_hNom . ' ' . $_hPrenom) ?: 'User') ?>
+          </small>
+        </a>
+        <a href="logout.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Logout</a>
+      <?php else: ?>
+        <a href="signin.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Sign In</a>
+      <?php endif; ?>
+    </div>
 
   </div>
 </header>

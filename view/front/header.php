@@ -47,11 +47,24 @@ if ($_hUserId !== '') {
         <li><a href="produits.php" <?= $currentPage === 'produits.php' ? 'class="active"' : '' ?>>Shop</a></li>
         <li><a href="Meals.php" <?= in_array($currentPage, ['Meals.php','day_plan.php','Plans.php','view_plan.php','create_plan.php']) ? 'class="active"' : '' ?>>Meals</a></li>
         <li><a href="Plans.php" <?= $currentPage === 'Plans.php' ? 'class="active"' : '' ?>>My Plan</a></li>
-        <li><a href="recettes.php" <?= $currentPage === 'recettes.php' ? 'class="active"' : '' ?>>Recipes</a></li>
+        <li><a href="repas.php" <?= $currentPage === 'repas.php' ? 'class="active"' : '' ?>>Recipes</a></li>
         <li><a href="#footer">Contact</a></li>
       </ul>
       <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
     </nav>
+
+    <button class="btn-getstarted position-relative ms-2" onclick="ouvrirPanier()" style="border:none;cursor:pointer;<?= $currentPage !== 'produits.php' ? 'display:none!important;' : '' ?>">
+      🛒 <span id="panier-badge" style="display:none;position:absolute;top:-6px;right:-6px;background:#fff;color:#c0392b;border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;line-height:18px;text-align:center;">0</span>
+    </button>
+    <button onclick="ouvrirWishlist()" title="My Wishlist"
+      style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#ce1212;position:relative;margin-left:6px;padding:4px 8px;<?= $currentPage !== 'produits.php' ? 'display:none!important;' : '' ?>">
+      <i class="bi bi-heart-fill"></i>
+      <span id="wishlist-badge" style="display:none;position:absolute;top:-4px;right:-2px;background:#ce1212;color:white;border-radius:50%;width:16px;height:16px;font-size:10px;font-weight:700;line-height:16px;text-align:center;">0</span>
+    </button>
+    <button onclick="ouvrirReclamation()" title="Submit a Complaint"
+      style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#ce1212;position:relative;margin-left:6px;padding:4px 8px;<?= $currentPage !== 'produits.php' ? 'display:none!important;' : '' ?>">
+      <i class="bi bi-megaphone-fill"></i>
+    </button>
 
     <!-- User account -->
     <div class="d-flex align-items-center gap-2 ms-3">
@@ -69,19 +82,6 @@ if ($_hUserId !== '') {
         <a href="signin.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Sign In</a>
       <?php endif; ?>
     </div>
-
-    <button class="btn-getstarted position-relative ms-2" onclick="ouvrirPanier()" style="border:none;cursor:pointer;">
-      🛒 <span id="panier-badge" style="display:none;position:absolute;top:-6px;right:-6px;background:#fff;color:#c0392b;border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;line-height:18px;text-align:center;">0</span>
-    </button>
-    <button onclick="ouvrirWishlist()" title="My Wishlist"
-      style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#ce1212;position:relative;margin-left:6px;padding:4px 8px;">
-      <i class="bi bi-heart-fill"></i>
-      <span id="wishlist-badge" style="display:none;position:absolute;top:-4px;right:-2px;background:#ce1212;color:white;border-radius:50%;width:16px;height:16px;font-size:10px;font-weight:700;line-height:16px;text-align:center;">0</span>
-    </button>
-    <button onclick="ouvrirReclamation()" title="Submit a Complaint"
-      style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#ce1212;position:relative;margin-left:6px;padding:4px 8px;">
-      <i class="bi bi-megaphone-fill"></i>
-    </button>
   </div>
 </header>
 

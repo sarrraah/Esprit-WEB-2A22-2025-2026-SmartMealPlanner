@@ -101,28 +101,16 @@ $imageUrl = $evenement->getImage() ? '../../../uploads/evenements/' . $evenement
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="css/admin.css">
+<style>
+  .admin-shell { display: flex !important; min-height: 100vh !important; }
+  .main-area { flex: 1 !important; overflow-y: auto !important; min-width: 0 !important; }
+  .sidebar { display: none !important; }
+</style>
 </head>
 <body>
 
 <div class="admin-shell">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">S</div>
-      <div class="brand-name">SmartMeal</div>
-    </div>
-    <div class="section-label">Dashboard</div>
-    <nav>
-      <a href="listEvenements.php" class="active"><i class="bi bi-calendar-event-fill"></i> Events</a>
-      <a href="listParticipations.php"><i class="bi bi-people-fill"></i> Participants</a>
-      <a href="afficherProduit.php"><i class="bi bi-bag-fill"></i> Products</a>
-      <a href="afficherCategorie.php"><i class="bi bi-tags-fill"></i> Categories</a>
-    </nav>
-    <div class="section-label">System</div>
-    <nav>
-      <a href="#"><i class="bi bi-bar-chart-fill"></i> Analytics</a>
-      <a href="#"><i class="bi bi-gear-fill"></i> Settings</a>
-    </nav>
-  </aside>
+  <?php include 'sidebar.php'; ?>
   <main class="main-area">
     <div class="topbar">
       <div class="topbar-title">

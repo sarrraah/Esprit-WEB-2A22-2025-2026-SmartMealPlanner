@@ -3,8 +3,8 @@ $_sbCurrentPage = basename($_SERVER['PHP_SELF']);
 
 $_sbShopPages   = ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php','afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php','afficherAvis.php','supprimerAvis.php','afficherReclamations.php'];
 $_sbEventPages  = ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php','listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php','listCommentaires.php','listPromoCodes.php'];
-$_sbMealPages   = ['afficherMeal.php','ajouterMeal.php','modifierMeal.php'];
-$_sbRecipePages = ['recette.php','add_recette.php','edit_recette.php','view_recette.php','repas.php','add_repas.php','edit_repas.php','search_repas.php','ingredients.php','statistiques.php','export_recettes_pdf.php','export_recette_pdf.php'];
+$_sbMealPages   = ['meal_bo_index.php','meals_admin.php','plans_admin.php'];
+$_sbRecipePages = ['index.php','repas.php','search_repas.php','recette.php','statistiques.php','utilisateurs.php','aliments_durables.php','contenu_nutritionnel.php','add_repas.php','edit_repas.php','add_recette.php','edit_recette.php','view_recette.php','ingredients.php'];
 
 $_sbSection = '';
 if (in_array($_sbCurrentPage, $_sbShopPages))   $_sbSection = 'shop';
@@ -13,6 +13,7 @@ if (in_array($_sbCurrentPage, $_sbMealPages))   $_sbSection = 'meal';
 if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
 ?>
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
   /* Force unified sidebar — overrides admin.css completely */
   .admin-shell { display: flex !important; min-height: 100vh !important; }
@@ -154,36 +155,53 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
 
     <!-- MEAL PLANNING -->
     <div class="usb-group">
-      <div class="usb-header" style="cursor:default;opacity:0.6;">
+      <div class="usb-header <?= $_sbSection === 'meal' ? 'open' : '' ?>" onclick="usbToggle(this)">
         <span class="usb-left"><i class="bi bi-journal-text"></i> Meal Planning</span>
         <i class="bi bi-chevron-down usb-chevron"></i>
+      </div>
+      <div class="usb-body <?= $_sbSection === 'meal' ? 'open' : '' ?>">
+        <a href="meal_bo_index.php" class="<?= $_sbCurrentPage === 'meal_bo_index.php' ? 'active' : '' ?>">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="meals_admin.php" class="<?= $_sbCurrentPage === 'meals_admin.php' ? 'active' : '' ?>">
+          <i class="bi bi-egg-fried"></i> Meals
+        </a>
+        <a href="plans_admin.php" class="<?= $_sbCurrentPage === 'plans_admin.php' ? 'active' : '' ?>">
+          <i class="bi bi-calendar-check"></i> My Plans
+        </a>
       </div>
     </div>
 
     <!-- RECIPES -->
     <div class="usb-group">
       <div class="usb-header <?= $_sbSection === 'recipes' ? 'open' : '' ?>" onclick="usbToggle(this)">
-        <span class="usb-left"><i class="bi bi-journal-richtext"></i> Recipes</span>
+        <span class="usb-left"><i class="bi bi-book"></i> Recipes</span>
         <i class="bi bi-chevron-down usb-chevron"></i>
       </div>
       <div class="usb-body <?= $_sbSection === 'recipes' ? 'open' : '' ?>">
-        <a href="recette.php" class="<?= in_array($_sbCurrentPage, ['recette.php','add_recette.php','edit_recette.php','view_recette.php']) ? 'active' : '' ?>">
-          <i class="bi bi-journal-richtext"></i> Recettes
+        <a href="index.php" class="<?= $_sbCurrentPage === 'index.php' ? 'active' : '' ?>">
+          <i class="bi bi-speedometer2"></i> Dashboard
         </a>
         <a href="repas.php" class="<?= in_array($_sbCurrentPage, ['repas.php','add_repas.php','edit_repas.php']) ? 'active' : '' ?>">
-          <i class="bi bi-bowl-hot"></i> Repas
+          <i class="bi bi-bowl-hot"></i> Gestion des Repas
         </a>
         <a href="search_repas.php" class="<?= $_sbCurrentPage === 'search_repas.php' ? 'active' : '' ?>">
           <i class="bi bi-search"></i> Repas par Recette
         </a>
-        <a href="ingredients.php" class="<?= $_sbCurrentPage === 'ingredients.php' ? 'active' : '' ?>">
-          <i class="bi bi-basket"></i> Ingrédients
+        <a href="recette.php" class="<?= in_array($_sbCurrentPage, ['recette.php','add_recette.php','edit_recette.php','view_recette.php']) ? 'active' : '' ?>">
+          <i class="bi bi-journal-richtext"></i> Gestion des Recettes
         </a>
         <a href="statistiques.php" class="<?= $_sbCurrentPage === 'statistiques.php' ? 'active' : '' ?>">
           <i class="bi bi-bar-chart-line"></i> Statistiques
         </a>
-        <a href="export_recettes_pdf.php" target="_blank">
-          <i class="bi bi-file-earmark-pdf"></i> Export PDF
+        <a href="utilisateurs.php" class="<?= $_sbCurrentPage === 'utilisateurs.php' ? 'active' : '' ?>">
+          <i class="bi bi-people"></i> Utilisateurs
+        </a>
+        <a href="aliments_durables.php" class="<?= $_sbCurrentPage === 'aliments_durables.php' ? 'active' : '' ?>">
+          <i class="bi bi-leaf"></i> Aliments Durables
+        </a>
+        <a href="contenu_nutritionnel.php" class="<?= $_sbCurrentPage === 'contenu_nutritionnel.php' ? 'active' : '' ?>">
+          <i class="bi bi-heart-pulse"></i> Contenu Nutritionnel
         </a>
       </div>
     </div>
