@@ -440,7 +440,9 @@ $nbIngredients = array_sum(array_map(fn($r) => count($r['ingredients'] ?? []), $
     <!-- ── Boutons d'action ────────────────────────────────────────────── -->
     <div class="print-actions">
         <a href="view_recette.php?id=<?= $id ?>" class="btn-back">← Retour</a>
-        <button class="btn-print" onclick="window.print()">🖨️ Télécharger PDF</button>
+        <button class="btn-print" id="btnDownload" onclick="telechargerPDF()">
+            ⬇️ <span id="btnLabel">Télécharger PDF</span>
+        </button>
     </div>
 
     <!-- ── En-tête du document ────────────────────────────────────────── -->
@@ -656,13 +658,88 @@ $nbIngredients = array_sum(array_map(fn($r) => count($r['ingredients'] ?? []), $
         <span>Exporté le <?= date('d/m/Y à H:i:s') ?></span>
     </div>
 
-    <!-- ── Déclenchement automatique de l'impression ─────────────────── -->
+    <!-- ── Déclenchement automatique du téléchargement PDF ──────────── -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        window.addEventListener('load', function () {
-            setTimeout(function () {
-                window.print();
-            }, 700);
-        });
+    async function telechargerPDF() {
+        const btn   = document.getElementById('btnDownload');
+        const label = document.getElementById('btnLabel');
+
+        btn.disabled = true;
+        label.textContent = 'Génération…';
+
+        try {
+            const { jsPDF } = window.jspdf;
+
+            // Capturer le contenu de la page (hors boutons)
+            const element = document.body;
+            const canvas  = await html2canvas(element, {
+                scale:           2,          // haute résolution
+                useCORS:         true,
+                allowTaint:      true,
+                backgroundColor: '#ffffff',
+                ignoreElements:  (el) => el.classList.contains('print-actions'),
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+            // Dimensions A4 en mm
+            const pdf    = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const pdfW   = pdf.internal.pageSize.getWidth();
+            const pdfH   = pdf.internal.pageSize.getHeight();
+
+            // Calculer la hauteur proportionnelle
+            const imgW   = canvas.width;
+            const imgH   = canvas.height;
+            const ratio  = imgW / imgH;
+
+            let posY     = 0;
+            const pageH  = pdfW / ratio; // hauteur d'une "tranche" en mm
+
+            // Découper en pages si le contenu dépasse une page A4
+            let remaining = pdfH * (imgH / (pdfW / pdfW * imgW));
+            let page      = 0;
+
+            while (posY < imgH) {
+                if (page > 0) pdf.addPage();
+
+                // Hauteur de la tranche en pixels
+                const sliceH = Math.min(imgH - posY, imgH * (pdfH / (imgH * pdfW / imgW)));
+
+                pdf.addImage(
+                    imgData,
+                    'JPEG',
+                    0, -(posY * pdfW / imgW),  // décalage vertical
+                    pdfW,
+                    imgH * pdfW / imgW          // hauteur totale de l'image mise à l'échelle
+                );
+
+                posY += imgH * (pdfH / (imgH * pdfW / imgW));
+                page++;
+
+                // Sécurité : max 20 pages
+                if (page >= 20) break;
+            }
+
+            // Télécharger directement
+            const filename = 'recette-<?= preg_replace('/[^a-z0-9]/i', '-', $recette['nom_recette']) ?>-<?= date('Y-m-d') ?>.pdf';
+            pdf.save(filename);
+
+        } catch (err) {
+            console.error(err);
+            // Fallback : impression navigateur
+            window.print();
+        } finally {
+            btn.disabled = false;
+            label.textContent = 'Télécharger PDF';
+        }
+    }
+
+    // Téléchargement automatique à l'ouverture
+    window.addEventListener('load', function () {
+        setTimeout(telechargerPDF, 800);
+    });
     </script>
 
 </body>

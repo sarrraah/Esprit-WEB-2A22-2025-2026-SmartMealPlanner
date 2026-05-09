@@ -4,7 +4,7 @@ $_sbCurrentPage = basename($_SERVER['PHP_SELF']);
 $_sbShopPages   = ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php','afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php','afficherAvis.php','supprimerAvis.php','afficherReclamations.php'];
 $_sbEventPages  = ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php','listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php','listCommentaires.php','listPromoCodes.php'];
 $_sbMealPages   = ['afficherMeal.php','ajouterMeal.php','modifierMeal.php'];
-$_sbRecipePages = ['afficherRecette.php','ajouterRecette.php','modifierRecette.php'];
+$_sbRecipePages = ['recette.php','add_recette.php','edit_recette.php','view_recette.php','repas.php','add_repas.php','edit_repas.php','search_repas.php','ingredients.php','statistiques.php','export_recettes_pdf.php','export_recette_pdf.php'];
 
 $_sbSection = '';
 if (in_array($_sbCurrentPage, $_sbShopPages))   $_sbSection = 'shop';
@@ -162,9 +162,29 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
 
     <!-- RECIPES -->
     <div class="usb-group">
-      <div class="usb-header" style="cursor:default;opacity:0.6;">
-        <span class="usb-left"><i class="bi bi-book"></i> Recipes</span>
+      <div class="usb-header <?= $_sbSection === 'recipes' ? 'open' : '' ?>" onclick="usbToggle(this)">
+        <span class="usb-left"><i class="bi bi-journal-richtext"></i> Recipes</span>
         <i class="bi bi-chevron-down usb-chevron"></i>
+      </div>
+      <div class="usb-body <?= $_sbSection === 'recipes' ? 'open' : '' ?>">
+        <a href="recette.php" class="<?= in_array($_sbCurrentPage, ['recette.php','add_recette.php','edit_recette.php','view_recette.php']) ? 'active' : '' ?>">
+          <i class="bi bi-journal-richtext"></i> Recettes
+        </a>
+        <a href="repas.php" class="<?= in_array($_sbCurrentPage, ['repas.php','add_repas.php','edit_repas.php']) ? 'active' : '' ?>">
+          <i class="bi bi-bowl-hot"></i> Repas
+        </a>
+        <a href="search_repas.php" class="<?= $_sbCurrentPage === 'search_repas.php' ? 'active' : '' ?>">
+          <i class="bi bi-search"></i> Repas par Recette
+        </a>
+        <a href="ingredients.php" class="<?= $_sbCurrentPage === 'ingredients.php' ? 'active' : '' ?>">
+          <i class="bi bi-basket"></i> Ingrédients
+        </a>
+        <a href="statistiques.php" class="<?= $_sbCurrentPage === 'statistiques.php' ? 'active' : '' ?>">
+          <i class="bi bi-bar-chart-line"></i> Statistiques
+        </a>
+        <a href="export_recettes_pdf.php" target="_blank">
+          <i class="bi bi-file-earmark-pdf"></i> Export PDF
+        </a>
       </div>
     </div>
   </div>

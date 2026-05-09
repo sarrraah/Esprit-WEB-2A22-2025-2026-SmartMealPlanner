@@ -279,8 +279,8 @@ $triLabel = match(true) {
            class="btn-back">
             ← Retour
         </a>
-        <button class="btn-print" onclick="window.print()">
-            🖨️ Télécharger / Imprimer PDF
+        <button class="btn-print" id="btnDownload" onclick="telechargerPDF()">
+            ⬇️ <span id="btnLabel">Télécharger PDF</span>
         </button>
     </div>
 
@@ -427,15 +427,66 @@ $triLabel = match(true) {
         <span><?= $totalRecettes ?> recette<?= $totalRecettes > 1 ? 's' : '' ?> exportée<?= $totalRecettes > 1 ? 's' : '' ?></span>
     </div>
 
-    <!-- ── Déclenchement automatique de l'impression ─────────────────── -->
+    <!-- ── Téléchargement PDF direct via jsPDF + html2canvas ────────── -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // Ouvrir automatiquement la boîte de dialogue d'impression/PDF
-        // après un court délai pour laisser le temps aux images de charger
-        window.addEventListener('load', function () {
-            setTimeout(function () {
-                window.print();
-            }, 600);
-        });
+    async function telechargerPDF() {
+        const btn   = document.getElementById('btnDownload');
+        const label = document.getElementById('btnLabel');
+
+        btn.disabled = true;
+        label.textContent = 'Génération…';
+
+        try {
+            const { jsPDF } = window.jspdf;
+
+            const canvas = await html2canvas(document.body, {
+                scale:           2,
+                useCORS:         true,
+                allowTaint:      true,
+                backgroundColor: '#ffffff',
+                ignoreElements:  (el) => el.classList.contains('print-actions'),
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.92);
+            const pdf     = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const pdfW    = pdf.internal.pageSize.getWidth();
+            const pdfH    = pdf.internal.pageSize.getHeight();
+            const imgW    = canvas.width;
+            const imgH    = canvas.height;
+
+            // Hauteur totale de l'image mise à l'échelle en mm
+            const scaledH = imgH * pdfW / imgW;
+            // Hauteur d'une page en pixels
+            const pageHpx = imgH * pdfH / scaledH;
+
+            let posY = 0;
+            let page = 0;
+
+            while (posY < imgH) {
+                if (page > 0) pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, -(posY * pdfW / imgW), pdfW, scaledH);
+                posY += pageHpx;
+                page++;
+                if (page >= 30) break;
+            }
+
+            pdf.save('recettes-smartmeal-<?= date('Y-m-d') ?>.pdf');
+
+        } catch (err) {
+            console.error(err);
+            window.print(); // fallback
+        } finally {
+            btn.disabled = false;
+            label.textContent = 'Télécharger PDF';
+        }
+    }
+
+    // Téléchargement automatique à l'ouverture
+    window.addEventListener('load', function () {
+        setTimeout(telechargerPDF, 800);
+    });
     </script>
 
 </body>
