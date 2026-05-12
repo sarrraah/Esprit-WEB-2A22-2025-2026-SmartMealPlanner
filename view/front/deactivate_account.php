@@ -49,20 +49,11 @@ try {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Deactivate Account</title>
-
-    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
-
-    <style>
+<?php require_once __DIR__ . '/header.php'; ?>
+<link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="../assets/vendor/aos/aos.css" rel="stylesheet">
+<link href="../assets/css/main.css" rel="stylesheet">
+<style>
         body {
             background: #f8f8f8;
         }
@@ -316,36 +307,6 @@ try {
             }
         }
     </style>
-</head>
-
-<body>
-
-    <header id="header" class="header d-flex align-items-center sticky-top">
-        <div class="container position-relative d-flex align-items-center justify-content-between">
-
-            <a href="index.php?login=success" class="logo d-flex align-items-center me-auto me-xl-0">
-                <h1 class="sitename">Yummy</h1>
-                <span>.</span>
-            </a>
-
-            <nav id="navmenu" class="navmenu">
-                <ul>
-                    <li><a href="index.php?login=success#hero" class="active">Home</a></li>
-                    <li><a href="index.php?login=success#about">About</a></li>
-                    <li><a href="index.php?login=success#menu">Menu</a></li>
-                    <li><a href="index.php?login=success#contact">Contact</a></li>
-                </ul>
-                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-            </nav>
-
-            <a href="profile.php" class="btn-book-a-table text-start" style="line-height: 1.3;">
-                <div>
-                    <strong><?= htmlspecialchars($prenom . ' ' . $nom) ?></strong>
-                </div>
-            </a>
-
-        </div>
-    </header>
 
     <section class="profile-hero text-center">
         <div class="container" data-aos="fade-up">

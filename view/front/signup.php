@@ -6,10 +6,10 @@ if (session_status() === PHP_SESSION_NONE) {
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../_project_files/vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
-$dotenv->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../_project_files/config', '.env');
+$dotenv->safeLoad();
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as MailException;
@@ -70,7 +70,7 @@ function sendConfirmationEmail($email, $prenom, $token)
 
     try {
 
-        $verifyLink = "http://localhost/ryhem/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/verify_email.php?token=" . urlencode($token);
+        $verifyLink = "http://localhost/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/verify_email.php?token=" . urlencode($token);
 
         $mail->isSMTP();
         $mail->SMTPOptions = [
@@ -154,11 +154,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($captchaResponse === '') {
         $error = 'Please confirm that you are not a robot.';
     } else {
-        $recaptcha = new \ReCaptcha\ReCaptcha($recaptchaSecretKey);
-        $captchaResult = $recaptcha->verify($captchaResponse, $_SERVER['REMOTE_ADDR']);
-
-        if (!$captchaResult->isSuccess()) {
-            $error = 'Captcha verification failed. Please try again.';
+        // Skip reCAPTCHA verification on localhost for development
+        $isLocalhost = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1', 'localhost']);
+        if (!$isLocalhost) {
+            $recaptcha = new \ReCaptcha\ReCaptcha($recaptchaSecretKey);
+            $captchaResult = $recaptcha->verify($captchaResponse, $_SERVER['REMOTE_ADDR']);
+            if (!$captchaResult->isSuccess()) {
+                $error = 'Captcha verification failed. Please try again.';
+            }
         }
     }
 
@@ -228,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Sign Up - Smart Meal Planner</title>
 
-    <link href="../assets/img/favicon.png" rel="icon">
+    <link rel="icon" type="image/jpeg" href="../assets/img/favicon.jpg">
     <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -1015,7 +1018,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label-custom">Date of Birth</label>
-                                        <input type="text" name="date_naissance" class="form-control" placeholder="YYYY-MM-DD" value="<?= htmlspecialchars($_POST['date_naissance'] ?? '') ?>">
+                                        <input type="date" name="date_naissance" class="form-control" value="<?= htmlspecialchars($_POST['date_naissance'] ?? '') ?>" max="<?= date('Y-m-d', strtotime('-10 years')) ?>">
                                     </div>
 
                                     <div class="col-md-6 mb-3">

@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include("header.php");
+require_once __DIR__ . '/header.php';
 ?>
 
 <style>
@@ -105,4 +105,4 @@ include("header.php");
 <script>
 function previewImage(input,id){var p=document.getElementById(id);if(input.files&&input.files[0]){var r=new FileReader();r.onload=function(e){p.src=e.target.result;p.style.display='block';};r.readAsDataURL(input.files[0]);}}
 </script>
-<?php include("footer.php"); ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

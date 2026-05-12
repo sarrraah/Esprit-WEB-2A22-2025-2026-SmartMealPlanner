@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../controller/MealController.php';
 
 $meals = MealController::listMeals();
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = '/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
 
 function resolveImageUrl(string $image, string $prefix): string {
     return $prefix . ltrim(preg_replace('#^assets/#', '', $image), '/');

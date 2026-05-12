@@ -1,50 +1,54 @@
 <?php
-declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
-
-require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../model/Database.php';
 require_once __DIR__ . '/../../model/Plan.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['ok' => false, 'message' => 'POST required']); exit;
+$mealId   = (int)   ($_POST['meal_id']   ?? 0);
+$mealType = trim(   $_POST['meal_type']  ?? '');
+$mealDate = trim(   $_POST['meal_date']  ?? '');
+
+if (!$mealId || !$mealType || !$mealDate) {
+    echo json_encode(['ok' => false, 'message' => 'Missing required fields.']);
+    exit;
 }
 
-$mealId   = (int) ($_POST['meal_id']   ?? 0);
-$mealType = trim($_POST['meal_type']   ?? '');
-$mealDate = trim($_POST['meal_date']   ?? date('Y-m-d'));
-
 $plan = Plan::first();
-if (!$plan || $mealId <= 0 || $mealType === '') {
-    echo json_encode(['ok' => false, 'message' => 'Invalid data.']); exit;
+if (!$plan) {
+    echo json_encode(['ok' => false, 'message' => 'No active plan found.']);
+    exit;
 }
 
 try {
     $pdo = Database::pdo();
-    $pdo->exec('CREATE TABLE IF NOT EXISTS plan_detail (
-        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        plan_id INT UNSIGNED NOT NULL,
-        meal_date DATE NOT NULL,
-        meal_type VARCHAR(20) NOT NULL,
-        meal_id INT UNSIGNED NOT NULL,
-        PRIMARY KEY (id),
-        UNIQUE KEY uq_plan_date_type (plan_id, meal_date, meal_type)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
 
-    $stmt = $pdo->prepare('
-        INSERT INTO plan_detail (plan_id, meal_date, meal_type, meal_id)
-        VALUES (:plan_id, :meal_date, :meal_type, :meal_id)
-        ON DUPLICATE KEY UPDATE meal_id = :meal_id2
-    ');
-    $stmt->execute([
-        ':plan_id'   => $plan->id,
-        ':meal_date' => $mealDate,
-        ':meal_type' => $mealType,
-        ':meal_id'   => $mealId,
-        ':meal_id2'  => $mealId,
-    ]);
+    // Check if an entry already exists for this plan + date + type
+    $check = $pdo->prepare(
+        'SELECT id FROM plan_detail WHERE plan_id = :pid AND meal_date = :dt AND meal_type = :type'
+    );
+    $check->execute([':pid' => $plan->id, ':dt' => $mealDate, ':type' => $mealType]);
+    $existing = $check->fetchColumn();
 
-    echo json_encode(['ok' => true, 'message' => ucfirst($mealType) . ' meal saved!']);
+    if ($existing) {
+        // UPDATE — replace the meal of the same type
+        $stmt = $pdo->prepare(
+            'UPDATE plan_detail SET meal_id = :mid WHERE id = :id'
+        );
+        $stmt->execute([':mid' => $mealId, ':id' => $existing]);
+    } else {
+        // INSERT — new entry for this type on this date
+        $stmt = $pdo->prepare(
+            'INSERT INTO plan_detail (plan_id, meal_date, meal_type, meal_id)
+             VALUES (:pid, :dt, :type, :mid)'
+        );
+        $stmt->execute([
+            ':pid'  => $plan->id,
+            ':dt'   => $mealDate,
+            ':type' => $mealType,
+            ':mid'  => $mealId,
+        ]);
+    }
+
+    echo json_encode(['ok' => true, 'message' => 'Meal saved successfully.']);
 } catch (Throwable $e) {
-    echo json_encode(['ok' => false, 'message' => 'DB error: ' . $e->getMessage()]);
+    echo json_encode(['ok' => false, 'message' => $e->getMessage()]);
 }
-

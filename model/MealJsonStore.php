@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 /**
  * Data access layer for meals — backed by MySQL via PDO.

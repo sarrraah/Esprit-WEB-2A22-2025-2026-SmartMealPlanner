@@ -22,7 +22,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : '
          . '://' . $_SERVER['HTTP_HOST']
          . rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 
-include("header.php");
+require_once __DIR__ . '/header.php';
 ?>
 
 <style>
@@ -852,7 +852,8 @@ function confirmerCommande(e){
 function filtrerProduitsCat() {
   var q      = document.getElementById('searchProdCat').value.toLowerCase().trim();
   var tri    = document.getElementById('sortProdCat').value;
-  var statut = document.getElementById('filterStatutCat').value;
+  var statutEl = document.getElementById('filterStatutCat');
+  var statut = statutEl ? statutEl.value : '';
   var items  = Array.from(document.querySelectorAll('.produit-cat-item'));
   var visible = 0;
   items.forEach(function(el) {
@@ -1070,7 +1071,7 @@ function openProductModal(id) {
   btn.innerHTML = isMealPrep
     ? '<i class="bi bi-basket2 me-2"></i>Get Ingredients'
     : '<i class="bi bi-cart-plus me-2"></i>Add to Cart';
-  if (statut==='Disponible') {
+  if (statut==='Disponible' || statut==='Available') {
     btn.disabled=false; btn.style.background='#ce1212';
     btn.onclick = function() {
       var panier=getPanier(), ex=panier.find(function(p){return p.id===String(id);});
@@ -1424,9 +1425,9 @@ function wishlistAddToCartCat(id){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  updateBadge();
-  updateWishlistBadge();
-  loadCatBestPicks();
+  try { updateBadge(); } catch(e) { console.error('updateBadge failed:', e); }
+  try { updateWishlistBadge(); } catch(e) { console.error('updateWishlistBadge failed:', e); }
+  try { loadCatBestPicks(); } catch(e) { console.error('loadCatBestPicks failed:', e); }
 });
 updateBadge();
 
@@ -1471,8 +1472,14 @@ function loadCatBestPicks() {
   if (!loading || !list) return;
 
   fetch('get_best_by_category.php')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(text) {
+      console.log('[BestCat] raw response:', text.substring(0, 200));
+      var data;
+      try { data = JSON.parse(text); } catch(e) { throw new Error('JSON parse failed: ' + e.message + ' | raw: ' + text.substring(0,100)); }
       loading.style.display = 'none';
       if (!Array.isArray(data) || data.length === 0) {
         list.innerHTML = '<p style="color:#bbb;font-size:0.85rem;text-align:center;padding:12px 0;">No products available yet.</p>';
@@ -1770,4 +1777,4 @@ function setMealsCount(n){localStorage.setItem('smp_meals_count_<?= $_catUserId 
 
 <?php endif; ?>
 
-<?php include("footer.php"); ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

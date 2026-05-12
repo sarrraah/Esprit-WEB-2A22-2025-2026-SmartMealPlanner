@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../controller/UserController.php';
+require_once __DIR__ . '/../../config.php';
 
 $controller = new UserController();
 
@@ -49,20 +50,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!isValidAllowedEmail($email)) {
         $error = 'Email must end with @gmail.com or @esprit.tn.';
     } else {
-        $cleanData = [
-            'nom' => $nom,
-            'prenom' => $prenom,
-            'date_naissance' => $date_naissance,
-            'email' => $email,
-            'mot_de_passe' => $mot_de_passe,
-            'role' => $role,
-            'statut' => $statut,
-            'sexe' => $sexe
-        ];
+        // Check for duplicate email first
+        try {
+            $pdo = config::getConnexion();
+            $check = $pdo->prepare("SELECT COUNT(*) FROM user WHERE email = :email");
+            $check->execute([':email' => $email]);
+            if ((int)$check->fetchColumn() > 0) {
+                $error = 'This email address is already registered.';
+            } else {
+                $cleanData = [
+                    'nom'            => $nom,
+                    'prenom'         => $prenom,
+                    'date_naissance' => $date_naissance,
+                    'email'          => $email,
+                    'mot_de_passe'   => password_hash($mot_de_passe, PASSWORD_DEFAULT),
+                    'role'           => $role,
+                    'statut'         => $statut,
+                    'sexe'           => $sexe,
+                    'experience'     => '',
+                    'speciality'     => '',
+                    'motivation'     => '',
+                    'email_verified' => 1,
+                    'email_token'    => null,
+                ];
 
-        $controller->store($cleanData);
-        header('Location: users.php');
-        exit;
+                $controller->store($cleanData);
+                header('Location: users.php');
+                exit;
+            }
+        } catch (Exception $e) {
+            $error = 'Error: ' . $e->getMessage();
+        }
     }
 }
 ?>

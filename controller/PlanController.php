@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../model/Plan.php';
 require_once __DIR__ . '/../model/Meal.php';
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../model/Database.php';
 
 class PlanController
 {
@@ -13,6 +13,8 @@ class PlanController
 
     public static function createPlan(array $post): array
     {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
         $nom      = trim($post['nom']      ?? '');
         $objectif = trim($post['objectif'] ?? '');
         $duree    = max(1, (int) ($post['duree'] ?? 7));
@@ -24,6 +26,7 @@ class PlanController
 
         if ($errors) return ['ok' => false, 'errors' => $errors];
 
+        $userId    = (int) ($_SESSION['user_id'] ?? 0);
         $dateDebut = date('Y-m-d');
         $existing  = Plan::first();
 
@@ -45,7 +48,7 @@ class PlanController
                 'date_fin'    => date('Y-m-d', strtotime("+{$duree} days")),
                 'objectif'    => $objectif,
                 'description' => $calories ? "Daily target: {$calories} kcal" : '',
-                'user_id'     => 1,
+                'user_id'     => $userId,
             ]);
             $plan = Plan::first();
         }

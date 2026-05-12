@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../controller/PlanController.php';
 
 $plan        = Plan::first();
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = '../assets/template/';
 
 require_once __DIR__ . '/header.php';
 ?>

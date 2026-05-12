@@ -2,8 +2,26 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../config.mail.php';
+require_once __DIR__ . '/../../_project_files/vendor/autoload.php';
+require_once __DIR__ . '/../../config.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Load mail credentials from .env
+$_envPath = __DIR__ . '/../../_project_files/config';
+if (file_exists($_envPath . '/.env')) {
+    $lines = file($_envPath . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') !== false) {
+            [$key, $val] = explode('=', $line, 2);
+            $_ENV[trim($key)] = trim($val, " \t\n\r\0\x0B\"'");
+        }
+    }
+}
+define('GMAIL_USER', $_ENV['SMTP_USER'] ?? '');
+define('GMAIL_PASS', $_ENV['SMTP_PASS'] ?? '');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

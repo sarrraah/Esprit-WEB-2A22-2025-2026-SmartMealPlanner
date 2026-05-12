@@ -1,29 +1,36 @@
 <?php
-declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../../model/Plan.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['ok' => false]); exit;
-}
-
 $mealType = trim($_POST['meal_type'] ?? '');
-$date     = trim($_POST['date']      ?? date('Y-m-d'));
-$plan     = Plan::first();
+$date     = trim($_POST['date']     ?? '');
 
-if (!$plan || $mealType === '') {
-    echo json_encode(['ok' => false]); exit;
+if (!$mealType || !$date) {
+    echo json_encode(['ok' => false, 'error' => 'Missing parameters']);
+    exit;
 }
 
-$key = 'consumed_' . $plan->id . '_' . $date;
-if (!isset($_SESSION[$key])) $_SESSION[$key] = [];
+$plan = Plan::first();
+if (!$plan) {
+    echo json_encode(['ok' => false, 'error' => 'No active plan']);
+    exit;
+}
 
-if (isset($_SESSION[$key][$mealType])) {
-    unset($_SESSION[$key][$mealType]);
-    echo json_encode(['ok' => true, 'consumed' => false]);
+$sessionKey = 'consumed_' . $plan->id . '_' . $date;
+if (!isset($_SESSION[$sessionKey])) {
+    $_SESSION[$sessionKey] = [];
+}
+
+// Toggle
+if (isset($_SESSION[$sessionKey][$mealType])) {
+    unset($_SESSION[$sessionKey][$mealType]);
+    $consumed = false;
 } else {
-    $_SESSION[$key][$mealType] = true;
-    echo json_encode(['ok' => true, 'consumed' => true]);
+    $_SESSION[$sessionKey][$mealType] = true;
+    $consumed = true;
 }
+
+echo json_encode(['ok' => true, 'consumed' => $consumed]);

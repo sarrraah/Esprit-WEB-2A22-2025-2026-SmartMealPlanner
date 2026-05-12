@@ -107,19 +107,19 @@ class UserModel
         $query = $db->prepare($sql);
 
         return $query->execute([
-            'nom' => $data['nom'],
-            'prenom' => $data['prenom'],
+            'nom'            => $data['nom'],
+            'prenom'         => $data['prenom'],
             'date_naissance' => $data['date_naissance'],
-            'email' => $data['email'],
-            'mot_de_passe' => $data['mot_de_passe'],
-            'role' => $data['role'],
-            'statut' => $data['statut'],
-            'sexe' => $data['sexe'],
-            'experience' => $data['experience'],
-            'speciality' => $data['speciality'],
-            'motivation' => $data['motivation'],
-            'email_verified' => $data['email_verified'],
-            'email_token' => $data['email_token']
+            'email'          => $data['email'],
+            'mot_de_passe'   => $data['mot_de_passe'],
+            'role'           => $data['role'],
+            'statut'         => $data['statut'],
+            'sexe'           => $data['sexe'],
+            'experience'     => $data['experience']     ?? '',
+            'speciality'     => $data['speciality']     ?? '',
+            'motivation'     => $data['motivation']     ?? '',
+            'email_verified' => $data['email_verified'] ?? 1,
+            'email_token'    => $data['email_token']    ?? null,
         ]);
     }
 

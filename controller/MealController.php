@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../model/Meal.php';
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../model/Database.php';
 
 class MealController
 {

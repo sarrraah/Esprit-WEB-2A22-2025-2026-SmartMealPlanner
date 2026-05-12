@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 $activePage = 'plans';
-require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../model/Database.php';
 require_once __DIR__ . '/../../model/Plan.php';
 require_once __DIR__ . '/../../model/Meal.php';
 
 $plan = Plan::first();
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = '/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
 
 // Build week days
 $today = date('Y-m-d');
@@ -18,7 +18,7 @@ for ($i = 0; $i < 7; $i++) {
 // Selected day
 $selectedDate = $_GET['date'] ?? $today;
 
-// Load plan_detail for selected day — use same logic as front office (overrides + seed fallback)
+// Load plan_detail for selected day - use same logic as front office (overrides + seed fallback)
 $allMeals = Meal::all();
 $overrides = [];
 $overridePmIds = []; // plan_detail.id keyed by type (for delete)
@@ -107,7 +107,7 @@ if ($plan) {
 // All meals for the add form
 $allMeals = Meal::all();
 
-$typeIcons = ['breakfast' => '🌅', 'lunch' => '🥗', 'dinner' => '🍽️', 'snack' => '🍎'];
+$typeIcons = ['breakfast' => '☀️', 'lunch' => '🥗', 'dinner' => '🍽️', 'snack' => '🍎'];
 $objectifLabels = [
     'lose_weight'     => 'Lose Weight',
     'maintain_weight' => 'Maintain Weight',
@@ -120,7 +120,7 @@ $objectifLabels = [
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Back Office — My Plan</title>
+  <title>Back Office - My Plan</title>
   <link href="<?php echo $assetPrefix; ?>img/favicon.jpg" rel="icon">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -205,7 +205,7 @@ $objectifLabels = [
       <div class="alert alert-warning">No active plan found. <a href="../front/create_plan.php">Create one here</a>.</div>
     <?php else: ?>
 
-    <!-- ── Top: Plan Details (left) + Current Plan card (right) ── -->
+    <!-- -- Top: Plan Details (left) + Current Plan card (right) -- -->
     <div class="row g-4 mb-4">
 
       <!-- Left: Edit form -->
@@ -222,7 +222,7 @@ $objectifLabels = [
             <div class="mb-3">
               <label class="form-label fw-semibold" style="font-size:.85rem;">Plan Name</label>
               <div class="input-group">
-                <span class="input-group-text" style="background:#fff8f8;border-color:#eee;">📋</span>
+                <span class="input-group-text" style="background:#fff8f8;border-color:#eee;">📝</span>
                 <input type="text" class="form-control" id="pe-name" value="<?php echo htmlspecialchars($plan->nom); ?>" style="border-left:0;">
               </div>
               <small class="text-muted">Name of your plan.</small>
@@ -231,7 +231,7 @@ $objectifLabels = [
             <div class="mb-3">
               <label class="form-label fw-semibold" style="font-size:.85rem;">Objective</label>
               <div class="input-group">
-                <span class="input-group-text" style="background:#fff8f8;border-color:#eee;">🔥</span>
+                <span class="input-group-text" style="background:#fff8f8;border-color:#eee;">🎯</span>
                 <select class="form-select" id="pe-objectif" style="border-left:0;">
                   <?php foreach (['lose_weight'=>'Lose Weight','maintain_weight'=>'Maintain Weight','gain_muscle'=>'Gain Muscle','eat_healthy'=>'Eat Healthy'] as $val=>$lbl): ?>
                   <option value="<?php echo $val; ?>" <?php echo $plan->objectif===$val?'selected':''; ?>><?php echo $lbl; ?></option>
@@ -276,7 +276,7 @@ $objectifLabels = [
             <div class="mb-4">
               <label class="form-label fw-semibold" style="font-size:.85rem;">Description</label>
               <div class="input-group align-items-start">
-                <span class="input-group-text" style="background:#fff8f8;border-color:#eee;align-self:flex-start;padding-top:.6rem;">📋</span>
+                <span class="input-group-text" style="background:#fff8f8;border-color:#eee;align-self:flex-start;padding-top:.6rem;">📄</span>
                 <textarea class="form-control" id="pe-desc" rows="3" style="border-left:0;"><?php echo htmlspecialchars($plan->description); ?></textarea>
               </div>
               <small class="text-muted">Additional notes about your plan.</small>
@@ -294,7 +294,7 @@ $objectifLabels = [
         <div class="bo-card h-100">
           <div class="d-flex align-items-center justify-content-between mb-3 pb-2" style="border-bottom:2px solid #ce1212;">
             <div class="d-flex align-items-center gap-2">
-              <span style="color:#ce1212;font-size:1.1rem;">📅</span>
+              <span style="color:#ce1212;font-size:1.1rem;">📊</span>
               <h2 class="mb-0" style="font-size:1.05rem;font-weight:700;">Your Current Plan</h2>
             </div>
             <span style="background:#e8f5e9;color:#2e7d32;border-radius:20px;padding:.2rem .75rem;font-size:.8rem;font-weight:600;">Active</span>
@@ -302,11 +302,11 @@ $objectifLabels = [
 
           <!-- Plan identity -->
           <div class="d-flex align-items-center gap-4 mb-4 p-3" style="background:#fff8f8;border-radius:12px;">
-            <div style="width:72px;height:72px;background:#ffe0e0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;">📅</div>
+            <div style="width:72px;height:72px;background:#ffe0e0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;">🔥</div>
             <div>
               <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:.25rem;"><?php echo htmlspecialchars($plan->nom); ?></h3>
               <span style="background:#fff0f0;color:#ce1212;border-radius:20px;padding:.2rem .75rem;font-size:.85rem;font-weight:600;">
-                🔥 <?php echo htmlspecialchars($objectifLabels[$plan->objectif] ?? ucfirst($plan->objectif)); ?>
+                🎯 <?php echo htmlspecialchars($objectifLabels[$plan->objectif] ?? ucfirst($plan->objectif)); ?>
               </span>
               <p class="text-muted mb-0 mt-1" style="font-size:.9rem;">Daily target: <?php echo $dailyKcal; ?> kcal</p>
             </div>
@@ -344,7 +344,7 @@ $objectifLabels = [
             <div class="col-6 col-md-3">
               <div class="p-3 rounded-3" style="background:#f8f9fa;">
                 <div class="d-flex align-items-center gap-2 mb-1">
-                  <span>📝</span><small class="text-muted fw-semibold">Days Completed</small>
+                  <span>✅</span><small class="text-muted fw-semibold">Days Completed</small>
                 </div>
                 <p class="fw-bold mb-0" style="font-size:1.1rem;"><?php echo $daysElapsed; ?> / <?php echo $plan->duree; ?> days</p>
                 <small class="text-muted"><?php echo $progress; ?>%</small>
@@ -353,7 +353,7 @@ $objectifLabels = [
             <div class="col-6 col-md-3">
               <div class="p-3 rounded-3" style="background:#f8f9fa;">
                 <div class="d-flex align-items-center gap-2 mb-1">
-                  <span>🍴</span><small class="text-muted fw-semibold">Meals Planned</small>
+                  <span>🍽️</span><small class="text-muted fw-semibold">Meals Planned</small>
                 </div>
                 <p class="fw-bold mb-0" style="font-size:1.1rem;"><?php echo $mealsPlanned; ?></p>
                 <small class="text-muted">Meals</small>
@@ -374,7 +374,7 @@ $objectifLabels = [
 
           <!-- Tip -->
           <div class="p-3 rounded-3" style="background:#fffbf0;border:1px solid #fde68a;">
-            <p class="mb-0" style="font-size:.9rem;">⭐ <strong>Tip:</strong> Plan your meals, track your progress, and stay consistent. Small steps every day lead to big results!</p>
+            <p class="mb-0" style="font-size:.9rem;">💡 <strong>Tip:</strong> Plan your meals, track your progress, and stay consistent. Small steps every day lead to big results!</p>
           </div>
         </div>
       </div>
@@ -441,7 +441,7 @@ $objectifLabels = [
             <?php foreach ($dayMeals as $dm): ?>
             <tr>
               <td>
-                <span class="type-icon"><?php echo $typeIcons[$dm['meal_type']] ?? '🍴'; ?></span>
+                <span class="type-icon"><?php echo $typeIcons[$dm['meal_type']] ?? '🍽️'; ?></span>
                 <span class="type-label"><?php echo ucfirst($dm['meal_type']); ?></span>
               </td>
               <td>
@@ -451,7 +451,7 @@ $objectifLabels = [
                 <?php endif; ?>
               </td>
               <td class="kcal-val"><?php echo $dm['calories']; ?> kcal</td>
-              <td class="notes-cell"><?php echo htmlspecialchars(mb_strimwidth($dm['notes'] ?? '', 0, 60, '…')); ?></td>
+              <td class="notes-cell"><?php echo htmlspecialchars(mb_strimwidth($dm['notes'] ?? '', 0, 60, '-')); ?></td>
               <td>
                 <button class="btn-icon me-1" onclick="editMeal('<?php echo $dm['meal_type']; ?>', <?php echo $dm['meal_id']; ?>)" title="Replace">✏️</button>
                 <?php if ($dm['is_override']): ?>
@@ -480,7 +480,7 @@ $objectifLabels = [
             <label>Meal Type <span style="color:#ce1212">*</span></label>
             <select class="form-select" id="form-meal-type">
               <option value="">Choose...</option>
-              <option value="breakfast">🌅 Breakfast</option>
+              <option value="breakfast">☀️ Breakfast</option>
               <option value="lunch">🥗 Lunch</option>
               <option value="dinner">🍽️ Dinner</option>
               <option value="snack">🍎 Snack</option>
@@ -511,7 +511,7 @@ $objectifLabels = [
     <?php if ($plan): ?>
     <!-- Calories Chart -->
     <div class="bo-card mt-4" style="max-width:400px;">
-      <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:1rem;text-align:center;">Daily Calories — Target vs Planned</h2>
+      <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:1rem;text-align:center;">Daily Calories - Target vs Planned</h2>
       <canvas id="weeklyCalChart" width="300" height="300" style="display:block;margin:0 auto;"></canvas>
       <div class="d-flex justify-content-center gap-4 mt-3">
         <span style="font-size:.85rem;display:flex;align-items:center;gap:.4rem;">
@@ -566,7 +566,7 @@ $objectifLabels = [
   <?php endif; ?>
 </script>
 <script>
-const BASE = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/';
+const BASE = '/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/';
 
 // Save plan details
 document.getElementById('plan-edit-form').addEventListener('submit', function(e) {
@@ -634,10 +634,10 @@ function resetForm() {
 
 // Calorie slider (same as front office)
 var RANGES = {
-  'lose_weight':     { min: 1400, max: 1800, def: 1600, label: 'Weight loss: 1,400 – 1,800 kcal/day' },
-  'maintain_weight': { min: 1800, max: 2200, def: 2000, label: 'Maintain weight: 1,800 – 2,200 kcal/day' },
-  'gain_muscle':     { min: 2200, max: 2800, def: 2500, label: 'Gain muscle: 2,200 – 2,800 kcal/day' },
-  'eat_healthy':     { min: 1600, max: 2200, def: 1800, label: 'Eat healthy: 1,600 – 2,200 kcal/day' },
+  'lose_weight':     { min: 1400, max: 1800, def: 1600, label: 'Weight loss: 1,400 - 1,800 kcal/day' },
+  'maintain_weight': { min: 1800, max: 2200, def: 2000, label: 'Maintain weight: 1,800 - 2,200 kcal/day' },
+  'gain_muscle':     { min: 2200, max: 2800, def: 2500, label: 'Gain muscle: 2,200 - 2,800 kcal/day' },
+  'eat_healthy':     { min: 1600, max: 2200, def: 1800, label: 'Eat healthy: 1,600 - 2,200 kcal/day' },
 };
 var calInput = document.getElementById('pe-calories');
 var calHint  = document.getElementById('cal-hint');
@@ -650,7 +650,7 @@ var currentRange = null;
 
 function pct(val, r) { return Math.min(100, Math.max(0, ((val - r.min) / (r.max - r.min)) * 100)); }
 function updateSliderUI(val) { if (!currentRange) return; var p = pct(val, currentRange); fill.style.width = p + '%'; thumb.style.left = p + '%'; }
-function updateHint(val, r) { calHint.innerHTML = '👉 ' + r.label + ' &nbsp;<span style="color:#2e7d32;font-weight:700;">' + val + ' kcal/day</span>'; }
+function updateHint(val, r) { calHint.innerHTML = '🔥 ' + r.label + ' &nbsp;<span style="color:#2e7d32;font-weight:700;">' + val + ' kcal/day</span>'; }
 
 function applyRange(obj) {
   var r = RANGES[obj];

@@ -1,187 +1,185 @@
-# Smart Meal Planner – Web Application
+# SmartMeal Planner
 
-Developed as part of the WEB – 2nd Year Engineering Program at **Esprit School of Engineering – Tunisia** (Academic Year 2025–2026).
+A comprehensive meal planning and nutrition management system built with pure MVC architecture.
 
-Smart Meal Planner is an intelligent web application that helps users organize their nutrition by providing personalized meal planning, nutritional recommendations, and analysis of eating habits.
+## 📁 Project Structure
 
----
-
-## Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Contributors](#contributors)
-- [Contributions](#contributions)
-- [Academic Context](#academic-context)
-- [Licence](#licence)
-
----
-
-## Features
-
-### Objective
-The goal of this project is to help users adopt a healthier, more balanced, and responsible diet through intelligent meal planning.
-
-### Problem Solved
-Many people struggle with:
-- Choosing healthy meals
-- Understanding the nutritional value of their food
-- Organizing their grocery shopping
-- Tracking their eating habits
-- Adopting a sustainable consumption lifestyle
-
-### Main Features
-
-#### Front Office
-- Intuitive user interface with site presentation
-- Interactive nutritional test
-- Smart results with nutritional score
-- Personalized recommendations
-- Ecological score of meals
-- Statistics and visualization of eating habits
-- Automatic generation of a shopping list
-
-#### Back Office
-- User management
-- Meal and recipe management
-- Sustainable food management
-- Dashboard with statistics
-- Nutritional content management
-
----
-
-## Tech Stack
-
-### Frontend
-- HTML
-- CSS
-- JavaScript
-
-### Backend
-- PHP (MVC Architecture)
-- MySQL
-- PDO
-
----
-
-## Architecture
-
-The application is based on a two-part web architecture:
-
-- **Front Office**: user-facing interface for end users (navigation, nutritional test, results display)
-- **Back Office**: administration interface for managing users, meals, recipes, and nutritional data
-- The Front Office communicates with the Back Office via HTTP requests (API)
-
-The project follows the **MVC (Model-View-Controller)** pattern:
 ```
-controller/   → Business logic
-model/        → Database interactions
-view/
-├── front/    → User-facing pages
-├── back/     → Admin pages
-└── assets/   → CSS, JS, images
+SmartMealPlanner/
+├── model/              # Data Layer (16 files)
+│   ├── UserModel.php
+│   ├── Produit.php
+│   ├── Recette.php
+│   ├── Repas.php
+│   ├── Meal.php
+│   ├── Plan.php
+│   ├── Database.php
+│   └── ...
+│
+├── view/               # Presentation Layer (84 files)
+│   ├── back/           # Admin interface
+│   │   ├── partials/
+│   │   └── ...
+│   └── front/          # User interface
+│       ├── partials/
+│       └── ...
+│
+├── controller/         # Business Logic (18 files)
+│   ├── UserController.php
+│   ├── ProduitController.php
+│   ├── RecetteController.php
+│   ├── MealController.php
+│   ├── PlanController.php
+│   └── ...
+│
+├── _project_files/     # All other project files
+│   ├── assets/         # CSS, JS, Images
+│   ├── config/         # Environment files (.env)
+│   ├── database/       # Database files
+│   ├── vendor/         # Composer dependencies
+│   ├── uploads/        # User uploads
+│   ├── config.php      # Original config (backup)
+│   ├── index.php       # Original entry point (backup)
+│   ├── composer.json
+│   └── ...
+│
+├── config.php          # Minimal configuration
+├── index.php           # Entry point
+└── README.md           # This file
 ```
 
+## 🎯 Pure MVC Structure
+
+This project follows a **strict MVC architecture** with only three main folders:
+
+- **model/** - Data models and database access (PDO only)
+- **view/** - HTML templates and presentation
+- **controller/** - Business logic and request handling
+
+All other files (assets, config, vendor, etc.) are organized in `_project_files/` directory.
+
+## 🚀 Quick Start
+
+### Requirements
+- PHP 8.0+
+- MySQL 5.7+
+- Composer
+
+### Installation
+
+1. **Configure database**
+   ```bash
+   # Edit config.php with your database credentials
+   # Or use _project_files/config/.env
+   ```
+
+2. **Install dependencies** (if needed)
+   ```bash
+   cd _project_files
+   composer install
+   ```
+
+3. **Import database**
+   - Import SQL schema from `_project_files/database/`
+
+4. **Start server**
+   ```bash
+   php -S localhost:8000
+   ```
+
+5. **Access application**
+   - Open: `http://localhost:8000`
+
+## ✨ Features
+
+- **User Management**: Registration, authentication, role-based access
+- **Product Catalog**: Inventory with categories and reviews
+- **Meal Planning**: Recipe creation and meal composition
+- **Event Management**: Event creation and registration
+- **Nutritional Tracking**: Calorie and nutrient monitoring
+- **AI Recommendations**: Smart product suggestions
+
+## 🔒 Security
+
+- ✅ PDO prepared statements (SQL injection prevention)
+- ✅ Output sanitization (XSS prevention)
+- ✅ Server-side validation
+- ✅ Role-based access control
+- ✅ Session management
+
+## 🛠️ Technology Stack
+
+- **Backend**: PHP 8+ with MVC architecture
+- **Database**: MySQL with PDO
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Dependencies**: Composer (PHPMailer, etc.)
+
+## 📝 Development Guidelines
+
+### MVC Pattern
+
+1. **Model** - Create data model in `model/`
+   - Handle database operations
+   - Use PDO for all queries
+   - No business logic
+
+2. **Controller** - Add business logic in `controller/`
+   - Process requests
+   - Validate input
+   - Call models
+   - Pass data to views
+
+3. **View** - Create template in `view/`
+   - Display data only
+   - No database queries
+   - No business logic
+
+### Code Standards
+
+- Follow MVC pattern strictly
+- Use PDO for all database operations
+- Sanitize all output with `htmlspecialchars()`
+- Validate all input server-side
+- Document all functions
+
+## 📊 Project Statistics
+
+- **Models**: 16 data models
+- **Controllers**: 18 controllers
+- **Views**: 84 view templates
+- **Total**: 118 PHP files in MVC structure
+
+## 📂 File Organization
+
+### MVC Folders (Main Structure)
+- `model/` - 16 PHP files
+- `view/` - 84 PHP files
+- `controller/` - 18 PHP files
+
+### Project Files (Supporting Files)
+- `_project_files/assets/` - 71 files (CSS, JS, Images)
+- `_project_files/config/` - Environment configuration
+- `_project_files/vendor/` - Composer dependencies
+- `_project_files/uploads/` - User uploaded files
+
+## 🤝 Contributing
+
+1. Follow the MVC architecture
+2. Keep only Model, View, Controller in root
+3. Place supporting files in `_project_files/`
+4. Test your changes
+5. Document new features
+
+## 📄 License
+
+[Your License Here]
+
+## 👥 Authors
+
+[Your Team Information]
+
 ---
 
-## Installation
+**Built with ❤️ using pure MVC architecture**
 
-1. Clone the repository:
-```bash
-git clone https://github.com/sarrraah/Esprit-WEB-2A22-2025-2026-SmartMealPlanner.git
-cd Esprit-WEB-2A22-2025-2026-SmartMealPlanner
-```
-
-2. If you are using XAMPP:
-   - Place the project in the `htdocs` folder
-   - Start **Apache** and **MySQL** from the XAMPP control panel
-   - Access the project via `http://localhost/Esprit-WEB-2A22-2025-2026-SmartMealPlanner`
-
-3. Set up the database:
-   - Open `phpMyAdmin` at `http://localhost/phpmyadmin`
-   - Create a database named `smart_meal_planner`
-   - Import the provided `.sql` file
-
-4. Configure your connection:
-   - Open `config.php`
-   - Set your database credentials:
-```php
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "smart_meal_planner";
-```
-
----
-
-## Utilisation
-
-Once installed and running:
-
-1. Open your browser and go to `http://localhost/Esprit-WEB-2A22-2025-2026-SmartMealPlanner` 
-2. Register a new account or sign in
-3. Take the interactive nutritional test
-4. View your personalized meal recommendations and nutritional score
-5. Admins can log in at `/view/back/` to manage users, meals, and content
-
----
-
-## Contributors
-
-| Name | Module |
-|------|--------|
-| Sarah Skioui | Gestion Utilisateurs |
-| Bakis Harrabi | *Gestion Meal Planner* |
-| Rana Ben Abid | *Gestion Des Eevenements* |
-| Ryhem Hajji | *Gestion Shop* |
-| Mootaz Ibn EL Hadj | *Gestion Des Recettes* |
-
----
-
-## Contributions
-
-We welcome all contributions to this project!
-
-### How to contribute?
-
-1. **Fork the project**: Go to the GitHub page and click the **Fork** button in the top right corner
-2. **Clone your fork** locally:
-```bash
-git clone https://github.com/your-username/Esprit-WEB-2A22-2025-2026-SmartMealPlanner.git
-cd Esprit-WEB-2A22-2025-2026-SmartMealPlanner
-```
-3. **Create a new branch** for your feature:
-```bash
-git checkout -b feature/your-feature-name
-```
-4. **Commit your changes**:
-```bash
-git commit -m "Add: your feature description"
-```
-5. **Push and submit a Pull Request**:
-```bash
-git push origin feature/your-feature-name
-```
-
----
-
-## Academic Context
-
-Developed at **Esprit School of Engineering – Tunisia**
-Module: WEB
-Class: 2A22
-Academic Year: 2025–2026
-
-We thank **Esprit School of Engineering** and our supervisors for their guidance throughout this academic project.
-
----
-
-## Licence
-
-This project is licensed under the **MIT License**.
-For more details, see the [LICENSE](./LICENSE) file.
-
-### MIT License Details
-The MIT License is a permissive open-source license that allows anyone to use, copy, modify, and distribute this software, provided that the original copyright notice is included in all copies or substantial portions of the software.
+*Last updated: May 12, 2026*

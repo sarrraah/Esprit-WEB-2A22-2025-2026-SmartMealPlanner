@@ -26,7 +26,18 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
     }
 }
 
-require_once 'auth.php';
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// Check if user is banned
+if (isset($_SESSION['statut']) && strtolower(trim($_SESSION['statut'])) === 'banned') {
+    session_unset();
+    session_destroy();
+    header("Location: signin.php?error=banned");
+    exit();
+}
 
 $userId = $_SESSION['user_id'];
 $editMode = isset($_GET['edit']) && $_GET['edit'] == '1';
@@ -219,20 +230,9 @@ $requestBoxClass = 'request-pending';
 $requestTitle = 'Professional Request Pending';
 $requestText = 'Your professional account request is currently being reviewed by the admin team. You will be able to access professional features once it has been approved.';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>My Profile</title>
-
-    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
-
-    <style>
+<?php require_once __DIR__ . '/header.php'; ?>
+<link href="../assets/css/main.css" rel="stylesheet">
+<style>
         body {
             background: #f8f8f8;
         }
@@ -952,59 +952,23 @@ $requestText = 'Your professional account request is currently being reviewed by
             text-align: center;
         }
     </style>
-</head>
 
-<body>
-
-    <header id="header" class="header d-flex align-items-center sticky-top">
-        <div class="container position-relative d-flex align-items-center justify-content-between">
-
-            <a href="index.php?login=success" class="logo d-flex align-items-center me-auto me-xl-0">
-                <h1 class="sitename">Yummy</h1>
-                <span>.</span>
-            </a>
-
-            <nav id="navmenu" class="navmenu">
-                <ul>
-                    <li><a href="index.php?login=success#hero" class="active">Home</a></li>
-                    <li><a href="index.php?login=success#about">About</a></li>
-                    <li><a href="index.php?login=success#menu">Menu</a></li>
-                    <li><a href="index.php?login=success#contact">Contact</a></li>
-                </ul>
-                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-            </nav>
-
-            <a href="profile.php" class="btn-book-a-table text-center d-flex flex-column align-items-center">
-
-                <img
-                    src="../assets/img/profiles/<?= htmlspecialchars($profilePicture ?? 'default.png') ?>"
-                    alt="Profile"
-                    style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-bottom:5px;">
-
-                <strong style="font-size:12px;">
-                    <?= htmlspecialchars($prenom . ' ' . $nom) ?>
-                </strong>
-
-            </a>
-
-        </div>
-    </header>
-
-    <section class="profile-hero text-center">
-        <div class="container" data-aos="fade-up">
-            <h1 class="profile-title">My Profile</h1>
-            <p class="profile-subtitle">
+    <section class="profile-hero text-center" style="display:block !important; visibility:visible !important; opacity:1 !important;">
+        <div class="container" data-aos="fade-up" style="display:block !important; visibility:visible !important;">
+            <h1 class="profile-title" style="display:block !important; visibility:visible !important;">My Profile</h1>
+            <p class="profile-subtitle" style="display:block !important; visibility:visible !important;">
                 View your personal information, manage your account, and keep your profile up to date with ease.
             </p>
-            <div class="profile-title-line"></div>
+            <div class="profile-title-line" style="display:block !important; visibility:visible !important;"></div>
         </div>
     </section>
 
-    <section class="profile-wrapper">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8" data-aos="zoom-in" data-aos-delay="100">
+    <section class="profile-wrapper" style="display:block !important; visibility:visible !important; opacity:1 !important;">
+        <div class="container" style="display:block !important; visibility:visible !important;">
+            <div class="row justify-content-center" style="display:block !important; visibility:visible !important;">
+                <div class="col-lg-8" data-aos="zoom-in" data-aos-delay="100" style="display:block !important; visibility:visible !important;">
 
+                    
                     <?php
                     $requestStatus = $_GET['request'] ?? null;
 
@@ -1038,12 +1002,13 @@ $requestText = 'Your professional account request is currently being reviewed by
                         </div>
                     <?php endif; ?>
 
-                    <div class="profile-card">
+                    <div class="profile-card" style="display:block !important; visibility:visible !important; opacity:1 !important; background:white !important; padding:20px !important;">
 
-                        <div class="profile-top">
+                        
+                        <div class="profile-top" style="display:block !important; visibility:visible !important;">
                             <div class="profile-photo-wrapper <?= $editMode ? 'drag-drop-zone' : '' ?>" id="profileDropZone">
                                 <img
-                                    src="../assets/img/profiles/<?= htmlspecialchars($user['profile_picture'] ?? 'default.png') ?>"
+                                    src="/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/img/profiles/<?= htmlspecialchars($user['profile_picture'] ?? 'default.png') ?>"
                                     alt="Profile Picture"
                                     class="profile-photo"
                                     id="profilePreview">

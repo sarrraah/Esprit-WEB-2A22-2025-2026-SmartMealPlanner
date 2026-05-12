@@ -7,5 +7,10 @@ class Database
     {
         return config::getConnexion();
     }
+    
+    public static function pdo()
+    {
+        return config::getConnexion();
+    }
 }
 ?>

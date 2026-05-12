@@ -26,7 +26,7 @@ function sendPasswordResetEmail($email, $prenom, $token)
     $mail = new PHPMailer(true);
 
     try {
-        $resetLink = "http://localhost:8080/smart-meal-planner/view/front/forgot_password.php?token=" . urlencode($token);
+        $resetLink = "http://localhost/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/forgot_password.php?token=" . urlencode($token);
 
         $mail->isSMTP();
         $mail->SMTPOptions = [
@@ -216,20 +216,8 @@ if ($token !== '') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-    <title>Reset Password - Smart Meal Planner</title>
-
-    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
-
-    <style>
+<?php require_once __DIR__ . '/header.php'; ?>
+<style>
         body {
             background: linear-gradient(135deg, #fff9f9 0%, #fff3f3 40%, #ffffff 100%);
         }
@@ -375,18 +363,6 @@ if ($token !== '') {
             font-size: 14px;
         }
     </style>
-</head>
-
-<body class="starter-page-page">
-
-    <header id="header" class="header d-flex align-items-center sticky-top">
-        <div class="container position-relative d-flex align-items-center justify-content-center">
-            <a href="../index.php" class="logo d-flex align-items-center">
-                <h1 class="sitename">Smart Meal Planner</h1>
-                <span>.</span>
-            </a>
-        </div>
-    </header>
 
     <main class="main">
 
@@ -409,7 +385,7 @@ if ($token !== '') {
                         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
                     <?php endif; ?>
 
-                    <?php if ($success): ?>
+                    <?php if ($success && !$isResetMode): ?>
                         <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
                     <?php endif; ?>
 

@@ -4,7 +4,13 @@ require_once __DIR__ . '/../../controller/MealController.php';
 require_once __DIR__ . '/../../model/Plan.php';
 
 $meals       = MealController::listMeals();
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+    . '://' . $_SERVER['HTTP_HOST']
+    . rtrim(str_replace('\\', '/', str_replace(
+        str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'])),
+        '',
+        str_replace('\\', '/', realpath(__DIR__ . '/../../'))
+    )), '/') . '/view/assets/';
 
 $favouriteIds = MealController::getFavouriteIds();
 usort($meals, function($a, $b) use ($favouriteIds) {
@@ -247,7 +253,126 @@ require_once __DIR__ . '/header.php';
     if (f) { var btn = document.querySelector('.meal-filter[data-filter="'+f+'"]'); if(btn) btn.click(); }
   });
 </script>
-<script src="/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/js/meals.js?v=<?php echo time(); ?>"></script>
+<script src="../assets/js/meals.js?v=<?php echo time(); ?>"></script>
 <script src="meal_notifications.js"></script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
+
+<script>
+/* Meal card click → detail modal — runs after Bootstrap is loaded by footer */
+(function () {
+  // Always clean up backdrop/body-lock whenever ANY modal finishes hiding
+  function cleanModalState() {
+    document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+  }
+  document.addEventListener('hidden.bs.modal', cleanModalState);
+
+  var modalEl = document.getElementById('mealDetailModal');
+  if (!modalEl) return;
+  var modal = new bootstrap.Modal(modalEl);
+
+  function fillModal(card) {
+    modalEl.querySelector('[data-meal-detail="image"]').src = card.dataset.mealImage || '';
+    modalEl.querySelector('[data-meal-detail="image"]').alt = card.dataset.mealName || '';
+    modalEl.querySelector('[data-meal-detail="name"]').textContent = card.dataset.mealName || '';
+    modalEl.querySelector('[data-meal-detail="calories"]').textContent = card.dataset.mealCalories ? card.dataset.mealCalories + ' kcal' : '';
+    var typeEl = modalEl.querySelector('[data-meal-detail="type"]');
+    typeEl.textContent = card.dataset.mealTypeLabel || '';
+    typeEl.className = 'meal-detail__type';
+    var t = card.dataset.mealType;
+    if (t === 'breakfast' || t === 'lunch' || t === 'dinner' || t === 'snack') typeEl.classList.add('meal-detail__type--' + t);
+    modalEl.querySelector('[data-meal-detail="description"]').textContent = card.dataset.mealDescription || '';
+    var recipeBtn = modalEl.querySelector('[data-meal-detail="recipe"]');
+    recipeBtn.href = card.dataset.mealRecipe || '#';
+    var addBtn = modalEl.querySelector('[data-meal-detail="add"]');
+    addBtn.setAttribute('data-meal-id', card.dataset.mealId || '');
+    addBtn.setAttribute('data-meal-type', card.dataset.mealType || '');
+  }
+
+  document.querySelectorAll('.meal-card[data-meal-id]').forEach(function (card) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', function (e) {
+      // Don't open modal when clicking the fav button
+      if (e.target.closest('.fav-btn')) return;
+      fillModal(card);
+      modal.show();
+    });
+  });
+
+  var addBtn = modalEl.querySelector('[data-meal-detail="add"]');
+  if (addBtn) {
+    addBtn.addEventListener('click', function () {
+      var id = addBtn.getAttribute('data-meal-id');
+      var name = modalEl.querySelector('[data-meal-detail="name"]').textContent;
+      var mealType = addBtn.getAttribute('data-meal-type') || '';
+      if (!mealType) return;
+      modal.hide();
+      showDayPickerModal(id, name, mealType);
+    });
+  }
+
+  function showDayPickerModal(mealId, mealName, mealType) {
+    var dpModal = new bootstrap.Modal(document.getElementById('dayPickerModal'));
+    document.getElementById('dp-meal-name').textContent = mealName;
+    var container = document.getElementById('dp-days');
+    container.innerHTML = '';
+    var start = new Date(window.PLAN_START || new Date());
+    var end   = new Date(window.PLAN_END   || new Date(start.getTime() + 13 * 86400000));
+    var today = new Date().toISOString().slice(0, 10);
+    var days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    for (var d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      (function(dateStr) {
+        var isToday = dateStr === today;
+        var label = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.style.cssText = 'border:1.5px solid ' + (isToday ? '#ce1212' : '#eee') + ';background:' + (isToday ? '#fff8f8' : '#fff') + ';border-radius:10px;padding:.6rem 1rem;text-align:left;cursor:pointer;font-size:.9rem;font-weight:' + (isToday ? '700' : '500') + ';color:#212529;transition:.15s;';
+        btn.innerHTML = label + (isToday ? ' <span style="color:#ce1212;font-size:.8rem;margin-left:.4rem;">Today</span>' : '');
+        btn.addEventListener('click', function () { dpModal.hide(); saveMealToDay(mealId, mealType, mealName, dateStr); });
+        container.appendChild(btn);
+      })(d.toISOString().slice(0, 10));
+    }
+    dpModal.show();
+  }
+
+  function saveMealToDay(mealId, mealType, mealName, date) {
+    var fd = new FormData();
+    fd.append('meal_id', mealId);
+    fd.append('meal_type', mealType);
+    fd.append('meal_date', date);
+    fetch('plan_add_meal.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.ok) {
+          // Force-clean any lingering modal backdrop before navigating
+          document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
+          document.body.classList.remove('modal-open');
+          document.body.style.removeProperty('overflow');
+          document.body.style.removeProperty('padding-right');
+
+          // If coming from Replace button, go back to that day's plan page
+          var replaceDate = window.REPLACE_DATE || date;
+          window.location.href = 'day_plan.php?date=' + encodeURIComponent(replaceDate);
+        } else {
+          showMealToast('⚠ ' + (data.message || 'Could not add meal.'));
+        }
+      })
+      .catch(function(err) { showMealToast('⚠ Network error: ' + err); });
+  }
+
+  function showMealToast(message) {
+    var c = document.getElementById('plan-toast-container');
+    if (!c) { c = document.createElement('div'); c.id = 'plan-toast-container'; c.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;'; document.body.appendChild(c); }
+    var t = document.createElement('div');
+    t.style.cssText = 'background:#ce1212;color:#fff;padding:.75rem 1.25rem;border-radius:.5rem;box-shadow:0 4px 12px rgba(0,0,0,.2);font-size:.95rem;opacity:0;transition:opacity .3s;';
+    t.textContent = message;
+    c.appendChild(t);
+    requestAnimationFrame(function() { t.style.opacity = '1'; });
+    setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 3000);
+  }
+})();
+</script>

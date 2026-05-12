@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 0);
+error_reporting(0);
 /**
  * SQL (run once):
  * ALTER TABLE evenement ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0;
@@ -23,28 +25,8 @@ require_once __DIR__ . '/../../controller/EvenementController.php';
 $ctrl       = new EvenementController();
 $evenements = $ctrl->listEvenements();
 
-// ── User session for header ──────────────────────────────────────────────
-if (session_status() === PHP_SESSION_NONE) session_start();
-$_hUserId  = $_SESSION['user_id'] ?? '';
-$_hNom     = '';
-$_hPrenom  = '';
-$_hPicture = 'default.png';
-$_hEmail   = '';
-if ($_hUserId !== '') {
-  try {
-    require_once __DIR__ . '/../../config.php';
-    $pdo = config::getConnexion();
-    $stmt = $pdo->prepare("SELECT nom, prenom, profile_picture, email FROM user WHERE id = :id");
-    $stmt->execute(['id' => $_hUserId]);
-    $u = $stmt->fetch();
-    if ($u) {
-      $_hNom     = $u['nom'];
-      $_hPrenom  = $u['prenom'];
-      $_hPicture = $u['profile_picture'] ?? 'default.png';
-      $_hEmail   = $u['email'] ?? '';
-    }
-  } catch (Exception $e) {}
-}
+// Safety default — will be overwritten by header.php if user is logged in
+$_hEmail = '';
 
 $assetPrefix = '../assets/';
 
@@ -60,24 +42,11 @@ $typeConfig = [
 $total = count($evenements);
 $types = array_unique(array_map(fn($e) => $e->getType(), $evenements));
 sort($types);
+
+require_once __DIR__ . '/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Events — Smart Meal Planner</title>
-
-<link href="<?php echo $assetPrefix; ?>img/favicon.jpg" rel="icon">
-
-<link href="https://fonts.googleapis.com" rel="preconnect">
-<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
-
-<link href="<?php echo $assetPrefix; ?>vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="<?php echo $assetPrefix; ?>vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<link href="<?php echo $assetPrefix; ?>css/main.css" rel="stylesheet">
 
 <style>
 /* ── FILTERS ── */
@@ -412,49 +381,6 @@ sort($types);
 }
 .section-title p span { color: var(--accent-color, #ce1212); }
 </style>
-</head>
-<body class="index-page">
-
-<!-- NAVBAR — same as friend -->
-<header id="header" class="header d-flex align-items-center sticky-top">
-  <div class="container position-relative d-flex align-items-center justify-content-between">
-
-    <a href="../index.php" class="logo d-flex align-items-center me-auto me-xl-0">
-      <img src="<?php echo $assetPrefix; ?>img/logo-smp.jpg" alt="SmartMealPlanner" height="44">
-      <h1 class="sitename">SmartMealPlanner</h1>
-    </a>
-
-    <nav id="navmenu" class="navmenu">
-      <ul>
-        <li><a href="../index.php">Home</a></li>
-        <li><a href="interfaceevent.php" class="active">Events</a></li>
-        <li><a href="produits.php">Shop</a></li>
-        <li><a href="mealplanner.php">Meal Planning</a></li>
-        <li><a href="repas.php">Recipes</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-    </nav>
-
-    <!-- User account -->
-    <div class="d-flex align-items-center gap-2 ms-3">
-      <?php if ($_hUserId !== ''): ?>
-        <a href="profile.php" class="d-flex flex-column align-items-center text-decoration-none" style="line-height:1.1;">
-          <img src="../assets/img/profiles/<?= htmlspecialchars($_hPicture) ?>"
-               alt="Profile"
-               style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
-          <small style="font-size:0.7rem;color:#ce1212;font-weight:600;">
-            <?= htmlspecialchars(trim($_hNom . ' ' . $_hPrenom) ?: 'User') ?>
-          </small>
-        </a>
-        <a href="logout.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Logout</a>
-      <?php else: ?>
-        <a href="signin.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Sign In</a>
-      <?php endif; ?>
-    </div>
-
-  </div>
-</header>
 
 <main class="main">
 
@@ -515,8 +441,8 @@ sort($types);
           <p style="font-size:14px;color:#666;margin-bottom:14px;line-height:1.6">Register for events and unlock exclusive discount codes. Enter your email to see your progress.</p>
           <div style="display:flex;gap:10px;margin-bottom:0">
             <input type="email" id="goals-email" placeholder="your@email.com"
-              value="<?= htmlspecialchars($_hEmail) ?>"
-              <?= $_hEmail ? 'readonly style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:\'Inter\',sans-serif;background:#fdf5f5;color:#9a3535;"' : 'style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:\'Inter\',sans-serif;"' ?>>
+              value="<?= htmlspecialchars($GLOBALS['_hEmail'] ?? '') ?>"
+              <?= !empty($GLOBALS['_hEmail']) ? 'readonly style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:\'Inter\',sans-serif;background:#fdf5f5;color:#9a3535;"' : 'style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:10px 16px;font-size:13px;outline:none;font-family:\'Inter\',sans-serif;"' ?>>
             <button onclick="loadGoals()" id="goals-check-btn"
               style="background:#ce1212;color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">
               Check Progress
@@ -835,8 +761,8 @@ sort($types);
 
   <div class="ap-email-form">
     <input type="email" id="ap-email" placeholder="votre@email.com"
-           value="<?= htmlspecialchars($_hEmail) ?>"
-           <?= $_hEmail ? 'readonly style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:8px 14px;font-size:13px;outline:none;font-family:inherit;background:#fdf5f5;color:#9a3535;"' : '' ?>>
+           value="<?= htmlspecialchars($GLOBALS['_hEmail'] ?? '') ?>"
+           <?= !empty($GLOBALS['_hEmail']) ? 'readonly style="flex:1;border:1px solid #fde8e8;border-radius:999px;padding:8px 14px;font-size:13px;outline:none;font-family:inherit;background:#fdf5f5;color:#9a3535;"' : '' ?>>
     <button onclick="loadActivity()" title="Rechercher">🔍</button>
   </div>
 

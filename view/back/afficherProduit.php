@@ -77,7 +77,7 @@ $totalCategories = count($allCategories);
 $totalStock      = array_sum(array_column($allProduits, 'quantiteStock'));
 $totalDispo      = count(array_filter($allProduits, fn($p) => $p['statut'] === 'Available'));
 
-include("header.php");
+require_once __DIR__ . '/header.php';
 ?>
 
 <style>
@@ -712,4 +712,4 @@ document.getElementById('search-produit').addEventListener('input',filtrerProdui
 document.getElementById('filter-statut').addEventListener('change',filtrerProduits);
 </script>
 
-<?php include("footer.php"); ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

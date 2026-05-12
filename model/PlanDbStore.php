@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 class PlanDbStore
 {
@@ -21,9 +21,12 @@ class PlanDbStore
     public static function all(): array
     {
         if (!self::tableExists()) return [];
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
         try {
-            $rows = Database::pdo()->query('SELECT * FROM ' . self::TABLE . ' ORDER BY id_plan ASC')->fetchAll();
-            return array_map([Plan::class, 'fromRow'], $rows);
+            $stmt = Database::pdo()->prepare('SELECT * FROM ' . self::TABLE . ' WHERE user_id = :uid ORDER BY id_plan ASC');
+            $stmt->execute([':uid' => $userId]);
+            return array_map([Plan::class, 'fromRow'], $stmt->fetchAll());
         } catch (Throwable $e) {
             return [];
         }
@@ -49,7 +52,7 @@ class PlanDbStore
             ':date_fin'    => $data['date_fin']    ?? date('Y-m-d', strtotime("+{$duree} days")),
             ':objectif'    => $data['objectif']    ?? '',
             ':description' => $data['description'] ?? '',
-            ':user_id'     => $data['user_id']     ?? 1,
+            ':user_id'     => $data['user_id']     ?? 0,
         ]);
 
         try {

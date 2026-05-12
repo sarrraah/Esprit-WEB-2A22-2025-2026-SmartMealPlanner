@@ -6,24 +6,6 @@ require_once '../../model/Database.php';
 
 $pdo = Database::getConnection();
 
-// Auto-create table
-$pdo->exec("CREATE TABLE IF NOT EXISTS promo_code (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(50) NOT NULL UNIQUE,
-    discount    DECIMAL(10,2) NOT NULL DEFAULT 0,
-    type        ENUM('percent','fixed') NOT NULL DEFAULT 'percent',
-    id_event    INT NULL,
-    milestone_id INT NULL,
-    max_uses    INT NULL,
-    used_count  INT NOT NULL DEFAULT 0,
-    expires_at  DATETIME NULL,
-    active      TINYINT(1) NOT NULL DEFAULT 1,
-    created_at  DATETIME DEFAULT NOW()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-
-// Add milestone_id column if missing (for existing installs)
-try { $pdo->exec("ALTER TABLE promo_code ADD COLUMN milestone_id INT NULL AFTER id_event"); } catch(Throwable $e) {}
-
 $errors  = [];
 $success = '';
 

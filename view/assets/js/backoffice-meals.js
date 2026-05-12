@@ -201,14 +201,12 @@
 
       var tdId = document.createElement('td');
       tdId.className = 'bo-display-id';
-      // Will be renumbered after filtering / reload to always start at 1.
       tdId.textContent = String(m.displayId || (idx + 1));
 
       var tdImg = document.createElement('td');
       var img = document.createElement('img');
       img.className = 'bo-thumb';
       img.alt = '';
-      // If DB row doesn't have an image path, show a safe placeholder.
       img.src = m.image ? ('../' + m.image) : '../assets/img/meals/meal-24.png';
       img.loading = 'lazy';
       tdImg.appendChild(img);
@@ -437,7 +435,6 @@
       var recipeUrl = form.querySelector('[name="recipe_url"]').value.trim();
       var isNew = !editingId.value;
       var hasNewFile = fileInput && fileInput.files && fileInput.files.length > 0;
-      var hasExisting = existingImage && existingImage.value;
       var msgs = [];
 
       if (!name) {
@@ -515,3 +512,4 @@
 
   loadMeals();
 })();
+

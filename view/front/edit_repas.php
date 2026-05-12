@@ -17,7 +17,7 @@ $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . str_replace($docRoot, '', $
 
 $pageTitle  = 'Modifier le Repas - Smart Meal Planner';
 $activePage = 'repas';
-require_once __DIR__ . '/partials/header.php';
+require_once __DIR__ . '/header.php';
 ?>
 
 <!-- Page Title -->
@@ -177,5 +177,5 @@ function clearImage() {
 }
 </script>
 JS;
-require_once __DIR__ . '/partials/footer.php';
+require_once __DIR__ . '/footer.php';
 ?>

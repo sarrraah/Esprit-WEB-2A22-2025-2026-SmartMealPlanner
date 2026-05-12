@@ -18,7 +18,7 @@ $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . str_replace($docRoot, '', $
 
 $pageTitle  = htmlspecialchars($repas['nom']) . ' - Smart Meal Planner';
 $activePage = 'repas';
-require_once __DIR__ . '/partials/header.php';
+require_once __DIR__ . '/header.php';
 ?>
 
 <!-- Page Title -->
@@ -334,4 +334,4 @@ function copyFrontUrl(url) {
     });
 }
 </script>
-<?php require_once __DIR__ . '/partials/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

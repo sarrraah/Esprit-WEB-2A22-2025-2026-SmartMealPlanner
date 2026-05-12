@@ -4,13 +4,22 @@ $_sbCurrentPage = basename($_SERVER['PHP_SELF']);
 $_sbShopPages   = ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php','afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php','afficherAvis.php','supprimerAvis.php','afficherReclamations.php'];
 $_sbEventPages  = ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php','listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php','listCommentaires.php','listPromoCodes.php'];
 $_sbMealPages   = ['meal_bo_index.php','meals_admin.php','plans_admin.php'];
-$_sbRecipePages = ['index.php','repas.php','search_repas.php','recette.php','statistiques.php','utilisateurs.php','aliments_durables.php','contenu_nutritionnel.php','add_repas.php','edit_repas.php','add_recette.php','edit_recette.php','view_recette.php','ingredients.php'];
+$_sbRecipePages = ['index.php','repas.php','search_repas.php','recette.php','statistiques.php','aliments_durables.php','contenu_nutritionnel.php','add_repas.php','edit_repas.php','add_recette.php','edit_recette.php','view_recette.php','ingredients.php'];
+$_sbUserPages   = ['users.php','add_user.php','edit_user.php','delete_user.php','pending_requests.php','review_user_request.php'];
 
 $_sbSection = '';
 if (in_array($_sbCurrentPage, $_sbShopPages))   $_sbSection = 'shop';
 if (in_array($_sbCurrentPage, $_sbEventPages))  $_sbSection = 'events';
 if (in_array($_sbCurrentPage, $_sbMealPages))   $_sbSection = 'meal';
 if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
+if (in_array($_sbCurrentPage, $_sbUserPages))   $_sbSection = 'users';
+
+// Compute absolute base URL to view/back/ — works regardless of which page includes this sidebar
+$_sbDocRoot  = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT']));
+$_sbBackDir  = str_replace('\\', '/', realpath(__DIR__ . '/..'));  // view/back
+$_sbScheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$_sbBase     = $_sbScheme . '://' . $_SERVER['HTTP_HOST'] . str_replace($_sbDocRoot, '', $_sbBackDir) . '/';
+
 ?>
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -122,16 +131,16 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
         <i class="bi bi-chevron-down usb-chevron"></i>
       </div>
       <div class="usb-body <?= $_sbSection === 'shop' ? 'open' : '' ?>">
-        <a href="../back/afficherProduit.php" class="<?= in_array($_sbCurrentPage, ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>afficherProduit.php" class="<?= in_array($_sbCurrentPage, ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php']) ? 'active' : '' ?>">
           <i class="bi bi-box-seam"></i> Products
         </a>
-        <a href="../back/afficherCategorie.php" class="<?= in_array($_sbCurrentPage, ['afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>afficherCategorie.php" class="<?= in_array($_sbCurrentPage, ['afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php']) ? 'active' : '' ?>">
           <i class="bi bi-tags"></i> Categories
         </a>
-        <a href="../back/afficherAvis.php" class="<?= in_array($_sbCurrentPage, ['afficherAvis.php','supprimerAvis.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>afficherAvis.php" class="<?= in_array($_sbCurrentPage, ['afficherAvis.php','supprimerAvis.php']) ? 'active' : '' ?>">
           <i class="bi bi-chat-square-text"></i> Reviews
         </a>
-        <a href="../back/afficherReclamations.php" class="<?= $_sbCurrentPage === 'afficherReclamations.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>afficherReclamations.php" class="<?= $_sbCurrentPage === 'afficherReclamations.php' ? 'active' : '' ?>">
           <i class="bi bi-megaphone"></i> Complaints
         </a>
       </div>
@@ -144,16 +153,16 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
         <i class="bi bi-chevron-down usb-chevron"></i>
       </div>
       <div class="usb-body <?= $_sbSection === 'events' ? 'open' : '' ?>">
-        <a href="../back/listEvenements.php" class="<?= in_array($_sbCurrentPage, ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>listEvenements.php" class="<?= in_array($_sbCurrentPage, ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php']) ? 'active' : '' ?>">
           <i class="bi bi-calendar3"></i> Events
         </a>
-        <a href="../back/listParticipations.php" class="<?= in_array($_sbCurrentPage, ['listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>listParticipations.php" class="<?= in_array($_sbCurrentPage, ['listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php']) ? 'active' : '' ?>">
           <i class="bi bi-people"></i> Participations
         </a>
-        <a href="../back/listCommentaires.php" class="<?= $_sbCurrentPage === 'listCommentaires.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>listCommentaires.php" class="<?= $_sbCurrentPage === 'listCommentaires.php' ? 'active' : '' ?>">
           <i class="bi bi-chat-dots"></i> Comments
         </a>
-        <a href="../back/listPromoCodes.php" class="<?= $_sbCurrentPage === 'listPromoCodes.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>listPromoCodes.php" class="<?= $_sbCurrentPage === 'listPromoCodes.php' ? 'active' : '' ?>">
           <i class="bi bi-ticket-perforated"></i> Discount Codes
         </a>
       </div>
@@ -166,14 +175,30 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
         <i class="bi bi-chevron-down usb-chevron"></i>
       </div>
       <div class="usb-body <?= $_sbSection === 'meal' ? 'open' : '' ?>">
-        <a href="../back/meal_bo_index.php" class="<?= $_sbCurrentPage === 'meal_bo_index.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>meal_bo_index.php" class="<?= $_sbCurrentPage === 'meal_bo_index.php' ? 'active' : '' ?>">
           <i class="bi bi-speedometer2"></i> Dashboard
         </a>
-        <a href="../back/meals_admin.php" class="<?= $_sbCurrentPage === 'meals_admin.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>meals_admin.php" class="<?= $_sbCurrentPage === 'meals_admin.php' ? 'active' : '' ?>">
           <i class="bi bi-egg-fried"></i> Meals
         </a>
-        <a href="../back/plans_admin.php" class="<?= $_sbCurrentPage === 'plans_admin.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>plans_admin.php" class="<?= $_sbCurrentPage === 'plans_admin.php' ? 'active' : '' ?>">
           <i class="bi bi-calendar-check"></i> My Plans
+        </a>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="usb-group">
+      <div class="usb-header <?= $_sbSection === 'users' ? 'open' : '' ?>" onclick="usbToggle(this)">
+        <span class="usb-left"><i class="bi bi-people"></i> Users</span>
+        <i class="bi bi-chevron-down usb-chevron"></i>
+      </div>
+      <div class="usb-body <?= $_sbSection === 'users' ? 'open' : '' ?>">
+        <a href="<?= $_sbBase ?>users.php" class="<?= in_array($_sbCurrentPage, ['users.php','add_user.php','edit_user.php','delete_user.php']) ? 'active' : '' ?>">
+          <i class="bi bi-person-lines-fill"></i> All Users
+        </a>
+        <a href="<?= $_sbBase ?>pending_requests.php" class="<?= in_array($_sbCurrentPage, ['pending_requests.php','review_user_request.php']) ? 'active' : '' ?>">
+          <i class="bi bi-person-check"></i> Pending Requests
         </a>
       </div>
     </div>
@@ -185,28 +210,25 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
         <i class="bi bi-chevron-down usb-chevron"></i>
       </div>
       <div class="usb-body <?= $_sbSection === 'recipes' ? 'open' : '' ?>">
-        <a href="index.php" class="<?= $_sbCurrentPage === 'index.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>index.php" class="<?= $_sbCurrentPage === 'index.php' ? 'active' : '' ?>">
           <i class="bi bi-speedometer2"></i> Dashboard
         </a>
-        <a href="repas.php" class="<?= in_array($_sbCurrentPage, ['repas.php','add_repas.php','edit_repas.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>repas.php" class="<?= in_array($_sbCurrentPage, ['repas.php','add_repas.php','edit_repas.php']) ? 'active' : '' ?>">
           <i class="bi bi-bowl-hot"></i> Gestion des Repas
         </a>
-        <a href="search_repas.php" class="<?= $_sbCurrentPage === 'search_repas.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>search_repas.php" class="<?= $_sbCurrentPage === 'search_repas.php' ? 'active' : '' ?>">
           <i class="bi bi-search"></i> Repas par Recette
         </a>
-        <a href="recette.php" class="<?= in_array($_sbCurrentPage, ['recette.php','add_recette.php','edit_recette.php','view_recette.php']) ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>recette.php" class="<?= in_array($_sbCurrentPage, ['recette.php','add_recette.php','edit_recette.php','view_recette.php']) ? 'active' : '' ?>">
           <i class="bi bi-journal-richtext"></i> Gestion des Recettes
         </a>
-        <a href="statistiques.php" class="<?= $_sbCurrentPage === 'statistiques.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>statistiques.php" class="<?= $_sbCurrentPage === 'statistiques.php' ? 'active' : '' ?>">
           <i class="bi bi-bar-chart-line"></i> Statistiques
         </a>
-        <a href="utilisateurs.php" class="<?= $_sbCurrentPage === 'utilisateurs.php' ? 'active' : '' ?>">
-          <i class="bi bi-people"></i> Utilisateurs
-        </a>
-        <a href="aliments_durables.php" class="<?= $_sbCurrentPage === 'aliments_durables.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>aliments_durables.php" class="<?= $_sbCurrentPage === 'aliments_durables.php' ? 'active' : '' ?>">
           <i class="bi bi-leaf"></i> Aliments Durables
         </a>
-        <a href="contenu_nutritionnel.php" class="<?= $_sbCurrentPage === 'contenu_nutritionnel.php' ? 'active' : '' ?>">
+        <a href="<?= $_sbBase ?>contenu_nutritionnel.php" class="<?= $_sbCurrentPage === 'contenu_nutritionnel.php' ? 'active' : '' ?>">
           <i class="bi bi-heart-pulse"></i> Contenu Nutritionnel
         </a>
       </div>
@@ -215,7 +237,7 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
   </div>
 
   <div class="usb-front">
-    <a href="../../index.php">
+    <a href="<?= str_replace('/back/', '/front/', $_sbBase) ?>home.php">
       <i class="bi bi-arrow-left-circle"></i> Front Office
     </a>
   </div>

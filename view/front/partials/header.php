@@ -1,66 +1,78 @@
+﻿<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_hUserId  = $_SESSION['user_id'] ?? '';
+$_hNom     = '';
+$_hPrenom  = '';
+$_hPicture = 'default.png';
+if ($_hUserId !== '') {
+  try {
+    if (!class_exists('config')) {
+      require_once __DIR__ . '/../../../config.php';
+    }
+    $pdo = config::getConnexion();
+    $stmt = $pdo->prepare("SELECT nom, prenom, profile_picture FROM user WHERE id = :id");
+    $stmt->execute(['id' => $_hUserId]);
+    $u = $stmt->fetch();
+    if ($u) {
+      $_hNom     = $u['nom'];
+      $_hPrenom  = $u['prenom'];
+      $_hPicture = $u['profile_picture'] ?? 'default.png';
+    }
+  } catch (Exception $e) {}
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($pageTitle ?? 'Smart Meal Planner') ?></title>
-    <link href="../assets/img/favicon.png" rel="icon">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Amatic+SC:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
-    <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
-    <style>
-        /* Force all nav items visible on desktop */
-        @media (min-width: 1200px) {
-            .navmenu ul { display: flex !important; align-items: center; gap: 4px; }
-            .navmenu ul li { padding: 15px 10px !important; }
-            .navmenu ul li:last-child { padding-right: 0 !important; }
-        }
-        /* Admin button style in nav */
-        .nav-admin-btn {
-            background: var(--accent-color, #ce1212) !important;
-            color: #fff !important;
-            border-radius: 6px;
-            padding: 6px 14px !important;
-            font-size: .85rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-        }
-        .nav-admin-btn:hover { background: #a50e0e !important; color: #fff !important; }
-        /* Add repas highlight */
-        .nav-add-btn { color: var(--accent-color, #ce1212) !important; font-weight: 600; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= htmlspecialchars($pageTitle ?? 'Smart Meal Planner') ?></title>
+  <link rel="icon" type="image/jpeg" href="../assets/img/favicon.jpg">
+  <link href="../assets/template/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/template/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/template/vendor/aos/aos.css" rel="stylesheet">
+  <link href="../assets/template/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../assets/template/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="../assets/template/css/main.css" rel="stylesheet">
 </head>
-<body>
+<body class="index-page">
 
 <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
+  <div class="container position-relative d-flex align-items-center justify-content-between">
+    <a href="../index.php" class="logo d-flex align-items-center me-auto me-xl-0" style="gap:6px;">
+      <img src="../assets/img/logo-smp.jpg" alt="SmartMealPlanner" style="height:42px;width:auto;">
+      <span class="fw-bold" style="font-size:1.25rem;color:#2d2d2d;letter-spacing:0;">SmartMealPlanner</span>
+    </a>
 
-        <!-- Logo -->
-        <a href="home.php" class="logo d-flex align-items-center me-auto me-xl-0">
-            <h1 class="sitename">Smart<span>Meal</span></h1>
+    <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
+    <nav id="navmenu" class="navmenu">
+      <ul>
+        <li><a href="../index.php" <?= $currentPage === 'index.php' ? 'class="active"' : '' ?>>Home</a></li>
+        <li><a href="interfaceevent.php" <?= $currentPage === 'interfaceevent.php' ? 'class="active"' : '' ?>>Events</a></li>
+        <li><a href="produits.php" <?= $currentPage === 'produits.php' ? 'class="active"' : '' ?>>Shop</a></li>
+        <li><a href="Meals.php" <?= in_array($currentPage, ['Meals.php','day_plan.php','Plans.php','view_plan.php','create_plan.php']) ? 'class="active"' : '' ?>>Meals</a></li>
+        <li><a href="Plans.php" <?= $currentPage === 'Plans.php' ? 'class="active"' : '' ?>>My Plan</a></li>
+        <li><a href="repas.php" <?= in_array($currentPage, ['repas.php','detail_repas.php','edit_repas.php','home.php']) ? 'class="active"' : '' ?>>Recipes</a></li>
+        <li><a href="#footer">Contact</a></li>
+      </ul>
+      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+    </nav>
+
+    <!-- User account -->
+    <div class="d-flex align-items-center gap-2 ms-3">
+      <?php if ($_hUserId !== ''): ?>
+        <a href="profile.php" class="d-flex flex-column align-items-center text-decoration-none" style="line-height:1.1;">
+          <img src="../assets/img/profiles/<?= htmlspecialchars($_hPicture) ?>"
+               alt="Profile"
+               style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+          <small style="font-size:0.7rem;color:#ce1212;font-weight:600;">
+            <?= htmlspecialchars(trim($_hNom . ' ' . $_hPrenom) ?: 'User') ?>
+          </small>
         </a>
-
-        <nav id="navmenu" class="navmenu">
-            <ul>
-                <li>
-                    <a href="home.php" <?= ($activePage??'')==='home' ? 'class="active"' : '' ?>>
-                        Accueil
-                    </a>
-                </li>
-                <li>
-                    <a href="repas.php" <?= ($activePage??'')==='repas' ? 'class="active"' : '' ?>>
-                        Repas
-                    </a>
-                </li>
-            </ul>
-            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
-
-        <a class="btn-getstarted" href="repas.php">Voir les Repas</a>
-
+        <a href="logout.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Logout</a>
+      <?php else: ?>
+        <a href="signin.php" style="color:#ce1212;font-weight:600;font-size:0.85rem;text-decoration:none;">Sign In</a>
+      <?php endif; ?>
     </div>
+  </div>
 </header>

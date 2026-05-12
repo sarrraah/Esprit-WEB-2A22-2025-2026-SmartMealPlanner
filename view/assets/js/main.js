@@ -1,176 +1,121 @@
 /**
-* Template Name: Yummy
-* Template URL: https://bootstrapmade.com/yummy-bootstrap-restaurant-website-template/
-* Updated: Aug 07 2024 with Bootstrap v5.3.3
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-
-(function() {
+ * Front-office template helpers.
+ * Keep this file dependency-free: only optional integrations with vendor libs.
+ */
+(() => {
   "use strict";
 
-  /**
-   * Apply .scrolled class to the body as the page is scrolled down
-   */
-  function toggleScrolled() {
-    const selectBody = document.querySelector('body');
-    const selectHeader = document.querySelector('#header');
-    if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
-    window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
-  }
+  const select = (el, all = false) => {
+    el = el.trim();
+    if (all) return Array.from(document.querySelectorAll(el));
+    return document.querySelector(el);
+  };
 
-  document.addEventListener('scroll', toggleScrolled);
-  window.addEventListener('load', toggleScrolled);
+  const on = (type, el, listener, all = false) => {
+    const target = select(el, all);
+    if (!target) return;
+    if (all) target.forEach((t) => t.addEventListener(type, listener));
+    else target.addEventListener(type, listener);
+  };
 
-  /**
-   * Mobile nav toggle
-   */
-  const mobileNavToggleBtn = document.querySelector('.mobile-nav-toggle');
+  const onscroll = (el, listener) => el.addEventListener("scroll", listener);
 
-  function mobileNavToogle() {
-    document.querySelector('body').classList.toggle('mobile-nav-active');
-    mobileNavToggleBtn.classList.toggle('bi-list');
-    mobileNavToggleBtn.classList.toggle('bi-x');
-  }
-  mobileNavToggleBtn.addEventListener('click', mobileNavToogle);
-
-  /**
-   * Hide mobile nav on same-page/hash links
-   */
-  document.querySelectorAll('#navmenu a').forEach(navmenu => {
-    navmenu.addEventListener('click', () => {
-      if (document.querySelector('.mobile-nav-active')) {
-        mobileNavToogle();
-      }
-    });
-
-  });
-
-  /**
-   * Toggle mobile nav dropdowns
-   */
-  document.querySelectorAll('.navmenu .toggle-dropdown').forEach(navmenu => {
-    navmenu.addEventListener('click', function(e) {
-      e.preventDefault();
-      this.parentNode.classList.toggle('active');
-      this.parentNode.nextElementSibling.classList.toggle('dropdown-active');
-      e.stopImmediatePropagation();
-    });
-  });
-
-  /**
-   * Preloader
-   */
-  const preloader = document.querySelector('#preloader');
-  if (preloader) {
-    window.addEventListener('load', () => {
+  const initPreloader = () => {
+    const preloader = select("#preloader");
+    if (!preloader) return;
+    window.addEventListener("load", () => {
       preloader.remove();
     });
-  }
+  };
 
-  /**
-   * Scroll top button
-   */
-  let scrollTop = document.querySelector('.scroll-top');
+  const initScrollTop = () => {
+    const scrollTop = select("#scroll-top");
+    if (!scrollTop) return;
 
-  function toggleScrollTop() {
-    if (scrollTop) {
-      window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
-    }
-  }
-  scrollTop.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+    const toggle = () => {
+      scrollTop.classList.toggle("active", window.scrollY > 100);
+    };
+
+    window.addEventListener("load", toggle);
+    onscroll(document, toggle);
+
+    on("click", "#scroll-top", (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
-  });
+  };
 
-  window.addEventListener('load', toggleScrollTop);
-  document.addEventListener('scroll', toggleScrollTop);
+  const initMobileNav = () => {
+    const navmenu = select("#navmenu");
+    const toggle = select(".mobile-nav-toggle");
+    if (!navmenu || !toggle) return;
 
-  /**
-   * Animation on scroll function and init
-   */
-  function aosInit() {
-    AOS.init({
-      duration: 600,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false
+    on("click", ".mobile-nav-toggle", () => {
+      navmenu.classList.toggle("mobile-nav-active");
+      toggle.classList.toggle("bi-list");
+      toggle.classList.toggle("bi-x");
     });
-  }
-  window.addEventListener('load', aosInit);
 
-  /**
-   * Initiate glightbox
-   */
-  const glightbox = GLightbox({
-    selector: '.glightbox'
-  });
+    // Close mobile nav when clicking a link
+    on(
+      "click",
+      "#navmenu a",
+      () => {
+        if (!navmenu.classList.contains("mobile-nav-active")) return;
+        navmenu.classList.remove("mobile-nav-active");
+        toggle.classList.add("bi-list");
+        toggle.classList.remove("bi-x");
+      },
+      true
+    );
+  };
 
-  /**
-   * Initiate Pure Counter
-   */
-  new PureCounter();
-
-  /**
-   * Init swiper sliders
-   */
-  function initSwiper() {
-    document.querySelectorAll(".init-swiper").forEach(function(swiperElement) {
-      let config = JSON.parse(
-        swiperElement.querySelector(".swiper-config").innerHTML.trim()
-      );
-
-      if (swiperElement.classList.contains("swiper-tab")) {
-        initSwiperWithCustomPagination(swiperElement, config);
-      } else {
-        new Swiper(swiperElement, config);
-      }
+  const initAOS = () => {
+    if (!window.AOS) return;
+    window.addEventListener("load", () => {
+      window.AOS.init({
+        duration: 600,
+        easing: "ease-in-out",
+        once: true,
+        mirror: false,
+      });
     });
-  }
+  };
 
-  window.addEventListener("load", initSwiper);
+  const initGlightbox = () => {
+    if (!window.GLightbox) return;
+    window.addEventListener("load", () => {
+      window.GLightbox({
+        selector: ".glightbox",
+      });
+    });
+  };
 
-  /**
-   * Correct scrolling position upon page load for URLs containing hash links.
-   */
-  window.addEventListener('load', function(e) {
-    if (window.location.hash) {
-      if (document.querySelector(window.location.hash)) {
-        setTimeout(() => {
-          let section = document.querySelector(window.location.hash);
-          let scrollMarginTop = getComputedStyle(section).scrollMarginTop;
-          window.scrollTo({
-            top: section.offsetTop - parseInt(scrollMarginTop),
-            behavior: 'smooth'
-          });
-        }, 100);
-      }
-    }
-  });
+  const initSwiper = () => {
+    if (!window.Swiper) return;
+    // Only initialize if a swiper container is present.
+    const swiperEls = select(".swiper", true);
+    if (!swiperEls.length) return;
 
-  /**
-   * Navmenu Scrollspy
-   */
-  let navmenulinks = document.querySelectorAll('.navmenu a');
+    window.addEventListener("load", () => {
+      swiperEls.forEach((el) => {
+        // eslint-disable-next-line no-new
+        new window.Swiper(el, {
+          speed: 600,
+          loop: true,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: ".swiper-pagination", clickable: true },
+          navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        });
+      });
+    });
+  };
 
-  function navmenuScrollspy() {
-    navmenulinks.forEach(navmenulink => {
-      if (!navmenulink.hash) return;
-      let section = document.querySelector(navmenulink.hash);
-      if (!section) return;
-      let position = window.scrollY + 200;
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        document.querySelectorAll('.navmenu a.active').forEach(link => link.classList.remove('active'));
-        navmenulink.classList.add('active');
-      } else {
-        navmenulink.classList.remove('active');
-      }
-    })
-  }
-  window.addEventListener('load', navmenuScrollspy);
-  document.addEventListener('scroll', navmenuScrollspy);
-
+  initPreloader();
+  initScrollTop();
+  initMobileNav();
+  initAOS();
+  initGlightbox();
+  initSwiper();
 })();
+

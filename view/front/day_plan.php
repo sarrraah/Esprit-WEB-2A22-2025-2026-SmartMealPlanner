@@ -1,10 +1,10 @@
 ﻿<?php
 
-require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../model/Database.php';
 require_once __DIR__ . '/../../model/Plan.php';
 require_once __DIR__ . '/../../model/Meal.php';
 
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = '../assets/';
 
 $plan = Plan::first();
 if (!$plan) { header('Location: Plans.php'); exit; }
@@ -74,7 +74,7 @@ $totalPlanned = array_sum(array_map(fn($s) => $s['meal'] ? $s['meal']->calories 
 $remaining    = max(0, $dailyKcal - $totalPlanned);
 
 // Load consumed meals from session
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 $sessionKey = 'consumed_' . $plan->id . '_' . $dateStr;
 $consumed   = $_SESSION[$sessionKey] ?? [];
 

@@ -54,6 +54,58 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="css/admin.css">
     <style>
+      /* Unified sidebar layout */
+      body { display: flex !important; }
+      .admin-shell { display: flex; width: 100%; }
+      .main-area { flex: 1; min-width: 0; overflow-y: auto; }
+
+      .admin-topbar {
+        background: #fff;
+        border-bottom: 2px solid #ce1212;
+        padding: .9rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      }
+      .admin-topbar h5 {
+        font-family: 'Amatic SC', sans-serif;
+        font-size: 1.7rem;
+        color: #37373f;
+        margin: 0;
+      }
+      .btn-yummy {
+        background: #ce1212;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        transition: background .2s;
+      }
+      .btn-yummy:hover { background: #b51010; color: #fff; }
+
+      /* Pagination */
+      .pag-btn {
+        padding: 6px 12px; border-radius: 8px;
+        border: 1px solid #e5e7eb; background: #fff;
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: #374151; transition: .2s;
+      }
+      .pag-btn:hover:not(:disabled) { background: #ce1212; color: #fff; border-color: #ce1212; }
+      .pag-btn.pag-active { background: #ce1212; color: #fff; border-color: #ce1212; }
+      .pag-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+      .prix-gratuit { color: #16a34a; font-weight: 700; }
+      .prix-payant  { color: #111827; font-weight: 600; }
       .bo-logo{
         display:inline-flex;align-items:baseline;gap:2px;
         text-decoration:none;color:#111827;
@@ -241,7 +293,7 @@ $withParticipants = count(array_filter($evenements, function($e) use ($participa
 </head>
 <body>
 <div class="admin-shell">
-    <?php include 'sidebar.php'; ?>
+    <?php require_once __DIR__ . '/partials/sidebar.php'; ?>
     <main class="main-area">
         <div class="admin-topbar">
             <h5><i class="bi bi-calendar-event me-2" style="color:#ce1212"></i>Events Overview</h5>

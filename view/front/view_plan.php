@@ -1,8 +1,8 @@
-﻿<?php
+<?php
 
 require_once __DIR__ . '/../../model/Plan.php';
 
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = '/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
 
 $plan = Plan::first();
 if (!$plan) {
@@ -126,7 +126,7 @@ require_once __DIR__ . '/header.php';
       <div class="vp-card">
         <div class="row g-4">
 
-          <!-- ── Sidebar ──────────────────────────────────────── -->
+          <!-- -- Sidebar ---------------------------------------- -->
           <div class="col-lg-3 vp-sidebar">
             <h3><?php echo htmlspecialchars($plan->nom); ?></h3>
             <span class="vp-badge mb-3 d-inline-block">Active</span>
@@ -157,12 +157,12 @@ require_once __DIR__ . '/header.php';
             </p>
 
             <div class="tip-box">
-              <p class="fw-semibold mb-1" style="font-size:.95rem;">🌿 Tip</p>
+              <p class="fw-semibold mb-1" style="font-size:.95rem;">💡 Tip</p>
               <p class="mb-0" style="font-size:.9rem;">Staying consistent with your plan brings the best results. You've got this!</p>
             </div>
           </div>
 
-          <!-- ── Calendar ─────────────────────────────────────── -->
+          <!-- -- Calendar --------------------------------------- -->
           <div class="col-lg-9">
 
             <!-- Week nav -->
@@ -173,7 +173,7 @@ require_once __DIR__ . '/header.php';
                 </a>
                 <span>
                   <i class="bi bi-calendar3 text-danger me-1"></i>
-                  <?php echo date('M j', $weekStart); ?> – <?php echo date('M j, Y', $weekEnd); ?>
+                  <?php echo date('M j', $weekStart); ?> - <?php echo date('M j, Y', $weekEnd); ?>
                 </span>
                 <a href="?week=<?php echo $weekOffset + 1; ?>" class="cal-nav-btn">
                   <button><i class="bi bi-chevron-right"></i></button>
@@ -200,9 +200,9 @@ require_once __DIR__ . '/header.php';
                   <div class="day-kcal"><?php echo $day['kcal']; ?></div>
                   <div class="day-unit">kcal</div>
                 <?php elseif ($day['inPlan']) : ?>
-                  <div class="day-kcal" style="font-size:1rem;color:#ccc;">—</div>
+                  <div class="day-kcal" style="font-size:1rem;color:#ccc;">-</div>
                 <?php else : ?>
-                  <div class="day-kcal" style="font-size:1rem;color:#ddd;">—</div>
+                  <div class="day-kcal" style="font-size:1rem;color:#ddd;">-</div>
                 <?php endif; ?>
 
                 <?php if ($day['inPlan']) : ?>
@@ -221,15 +221,15 @@ require_once __DIR__ . '/header.php';
               <?php endforeach; ?>
             </div>
 
-            <!-- Weekly summary — doughnut chart -->
+            <!-- Weekly summary - doughnut chart -->
             <div class="weekly-bar" style="align-items:center;gap:1.5rem;">
               <canvas id="weeklyChart" width="40" height="40" style="flex-shrink:0;width:40px;height:40px;"></canvas>
               <div style="flex:1;">
                 <p class="fw-bold mb-1" style="color:#ce1212;font-size:1rem;">Weekly Summary</p>
                 <p class="label mb-2">
                   Target: <strong><?php echo number_format($weeklyTarget); ?> kcal</strong>
-                  &nbsp;·&nbsp; Planned: <strong><?php echo number_format($plannedSoFar); ?> kcal</strong>
-                  &nbsp;·&nbsp; Remaining: <strong><?php echo number_format($weeklyRemaining); ?> kcal</strong>
+                  &nbsp;-&nbsp; Planned: <strong><?php echo number_format($plannedSoFar); ?> kcal</strong>
+                  &nbsp;-&nbsp; Remaining: <strong><?php echo number_format($weeklyRemaining); ?> kcal</strong>
                 </p>
                 <div style="display:flex;gap:1rem;flex-wrap:wrap;">
                   <span style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;">

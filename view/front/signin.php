@@ -4,6 +4,11 @@ require_once '../../config.php';
 
 $error = '';
 
+// Check for banned error from auth.php redirect
+if (isset($_GET['error']) && $_GET['error'] === 'banned') {
+    $error = "Your account has been banned.";
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -16,12 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user || !password_verify($password, $user['mot_de_passe'])) {
+        if (!$user) {
             $error = "Invalid email or password.";
-        } elseif (isset($user['email_verified']) && $user['email_verified'] == 0) {
-            $error = "Please confirm your email before signing in.";
         } elseif ($user['statut'] === 'banned') {
             $error = "Your account has been banned.";
+        } elseif (isset($user['email_verified']) && $user['email_verified'] == 0) {
+            $error = "Please confirm your email before signing in.";
         } elseif ($user['statut'] === 'pending') {
             $error = "Your request is still under review by the admin team.";
         } elseif ($user['statut'] === 'deactivated') {
@@ -30,9 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header("Location: reactivate_account.php");
             exit();
+        } elseif (!password_verify($password, $user['mot_de_passe'])) {
+            $error = "Invalid email or password.";
         } elseif ($user['statut'] === 'active') {
-            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_id']   = $user['id'];
             $_SESSION['user_role'] = $user['role'];
+            $_SESSION['role']      = $user['role'];
+            $_SESSION['nom']       = $user['nom'];
+            $_SESSION['prenom']    = $user['prenom'];
+            $_SESSION['email']     = $user['email'];
+            $_SESSION['statut']    = $user['statut'];
 
             if (isset($_POST['remember_me'])) {
                 $token = bin2hex(random_bytes(32));
@@ -62,7 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
             }
 
-            header("Location: ../index.php");
+            // Redirect based on role
+            if (in_array($user['role'], ['nutritionist', 'coach'], true)) {
+                header("Location: ../../view/back/index.php");
+            } else {
+                // Admin and client roles can access front office
+                header("Location: ../front/home.php");
+            }
             exit();
         } else {
             $error = "Your account is not available right now.";
@@ -79,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Smart Meal Planner</title>
-
+    <link rel="icon" type="image/jpeg" href="../assets/img/favicon.jpg">
     <style>
         * {
             margin: 0;

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 
-require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../model/Database.php';
 require_once __DIR__ . '/../../model/Plan.php';
 require_once __DIR__ . '/../../model/Meal.php';
 
@@ -60,17 +60,6 @@ if ($chosenTs < $planStart || $chosenTs > $planEnd) {
 
 try {
     $pdo = Database::pdo();
-
-    // Ensure table exists
-    $pdo->exec('CREATE TABLE IF NOT EXISTS plan_detail (
-        id        INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        plan_id   INT UNSIGNED NOT NULL,
-        meal_date DATE         NOT NULL,
-        meal_type VARCHAR(20)  NOT NULL,
-        meal_id   INT UNSIGNED NOT NULL,
-        PRIMARY KEY (id),
-        UNIQUE KEY uq_plan_date_type (plan_id, meal_date, meal_type)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
 
     // Check if a meal already exists for this type today
     $checkStmt = $pdo->prepare('SELECT meal_id FROM plan_detail WHERE plan_id=:pid AND meal_date=:dt AND meal_type=:mt');

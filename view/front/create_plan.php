@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../../controller/PlanController.php';
 
-$assetPrefix = '/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
+$assetPrefix = '/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/';
 $errors  = [];
 $existing = Plan::first();
 
@@ -41,7 +41,7 @@ if ($existing && empty($_POST['calories'])) {
 $isEditing = $existing !== null;
 
 $objectives = [
-    'lose_weight'     => ['label' => 'Lose Weight',     'icon' => '🔥'],
+    'lose_weight'     => ['label' => 'Lose Weight',     'icon' => '⚡'],
     'maintain_weight' => ['label' => 'Maintain Weight', 'icon' => '⚖️'],
     'gain_muscle'     => ['label' => 'Gain Muscle',     'icon' => '💪'],
     'eat_healthy'     => ['label' => 'Eat Healthy',     'icon' => '🥗'],
@@ -199,7 +199,7 @@ require_once __DIR__ . '/header.php';
             <p class="text-center text-muted mb-4" style="font-size:1rem;">We'll help you stay on track every day.</p>
 
             <div class="text-center mb-4">
-              <span style="font-size:5rem;">📋</span>
+              <span style="font-size:5rem;">🎯</span>
             </div>
 
             <div class="side-feature">
@@ -256,10 +256,10 @@ require_once __DIR__ . '/header.php';
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     var RANGES = {
-      'lose_weight':     { min: 1400, max: 1800, def: 1600, label: 'Weight loss: 1,400 – 1,800 kcal/day' },
-      'maintain_weight': { min: 1800, max: 2200, def: 2000, label: 'Maintain weight: 1,800 – 2,200 kcal/day' },
-      'gain_muscle':     { min: 2200, max: 2800, def: 2500, label: 'Gain muscle: 2,200 – 2,800 kcal/day' },
-      'eat_healthy':     { min: 1600, max: 2200, def: 1800, label: 'Eat healthy: 1,600 – 2,200 kcal/day' },
+      'lose_weight':     { min: 1400, max: 1800, def: 1600, label: 'Weight loss: 1,400 - 1,800 kcal/day' },
+      'maintain_weight': { min: 1800, max: 2200, def: 2000, label: 'Maintain weight: 1,800 - 2,200 kcal/day' },
+      'gain_muscle':     { min: 2200, max: 2800, def: 2500, label: 'Gain muscle: 2,200 - 2,800 kcal/day' },
+      'eat_healthy':     { min: 1600, max: 2200, def: 1800, label: 'Eat healthy: 1,600 - 2,200 kcal/day' },
     };
 
     var calInput  = document.getElementById('calories');
@@ -283,14 +283,14 @@ require_once __DIR__ . '/header.php';
     }
 
     function updateHint(val, r) {
-      calHint.innerHTML = '👉 ' + r.label +
+      calHint.innerHTML = '&#128293; ' + r.label +
         ' &nbsp;<span style="color:#2e7d32;font-weight:700;">' + val + ' kcal/day</span>';
     }
 
     function applyRange(obj) {
       var r = RANGES[obj];
       if (!r) {
-        calHint.textContent = '👉 Default: 1,800 kcal/day';
+        calHint.textContent = '&#128293; Default: 1,800 kcal/day';
         calBar.style.display = 'none';
         currentRange = null;
         return;

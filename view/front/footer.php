@@ -24,10 +24,12 @@
       <div class="col-lg-3 col-md-6 d-flex">
         <i class="bi bi-link-45deg icon"></i>
         <div>
-          <h4>Liens utiles</h4>
-          <p><a href="../index.php">Accueil</a></p>
-          <p><a href="#products">Produits</a></p>
-          <p><a href="categories.php">Catégories</a></p>
+          <h4>Quick Links</h4>
+          <p><a href="../index.php">Home</a></p>
+          <p><a href="interfaceevent.php">Events</a></p>
+          <p><a href="produits.php">Shop</a></p>
+          <p><a href="Meals.php">Meals</a></p>
+          <p><a href="repas.php">Recipes</a></p>
         </div>
       </div>
 
@@ -49,7 +51,6 @@
   </div>
 </footer>
 <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-<div id="preloader"></div>
 <script src="../assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="../assets/template/vendor/aos/aos.js"></script>
 <script src="../assets/template/vendor/glightbox/js/glightbox.min.js"></script>

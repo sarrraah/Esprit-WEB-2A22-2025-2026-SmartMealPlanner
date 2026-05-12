@@ -30,14 +30,14 @@ foreach ($stats as $type => $count) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Back office — Meals</title>
-  <link href="/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/img/favicon.jpg" rel="icon">
+  <link href="../assets/img/favicon.jpg" rel="icon">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/css/main.css" rel="stylesheet">
-  <link href="/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/assets/css/backoffice-meals.css" rel="stylesheet">
+  <link href="../assets/css/main.css" rel="stylesheet">
+  <link href="css/backoffice-meals.css" rel="stylesheet">
 </head>
 
 <body class="index-page bo-meals-page">
@@ -216,7 +216,7 @@ foreach ($stats as $type => $count) {
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="backoffice-meals.js"></script>
+  <script src="backoffice-meals.js?v=<?= time() ?>"></script>
   <script>
     var TYPES  = ['Breakfast','Lunch','Dinner','Snack'];
     var COLORS = ['#f59e0b','#10b981','#ce1212','#6366f1'];

@@ -14,7 +14,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : '
          . '://' . $_SERVER['HTTP_HOST']
          . rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 
-include("header.php");
+require_once __DIR__ . '/header.php';
 ?>
 
 <style>
@@ -2430,7 +2430,7 @@ function confirmerCommande(e) {
     trackMealsPurchased(invoiceItems);
 
     // Send invoice email
-    fetch('/ryhem/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/send_invoice.php', {
+    fetch('/integration/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/send_invoice.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -2979,4 +2979,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_avis'])) {
 .modal-star-picker label:hover ~ label { color:#f39c12; }
 </style>
 
-<?php include("footer.php"); ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

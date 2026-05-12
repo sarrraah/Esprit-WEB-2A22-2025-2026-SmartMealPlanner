@@ -171,17 +171,6 @@ if ($userId && !empty($items)) {
     try {
         require_once __DIR__ . '/../../config.php';
         $db = config::getConnexion();
-        // Auto-create table if not exists
-        $db->exec("CREATE TABLE IF NOT EXISTS commande_item (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            id_produit INT NOT NULL,
-            quantite INT NOT NULL DEFAULT 1,
-            order_no VARCHAR(20),
-            created_at DATETIME DEFAULT NOW(),
-            INDEX(user_id),
-            INDEX(id_produit)
-        )");
         $stmt = $db->prepare("INSERT INTO commande_item (user_id, id_produit, quantite, order_no) VALUES (:uid, :pid, :qty, :ono)");
         foreach ($items as $item) {
             $pid = (int)($item['id'] ?? 0);
@@ -215,8 +204,7 @@ try {
     $mail->Subject = '✅ Order Confirmed #' . $orderNo . ' — SmartMeal Planner';
     $mail->Body    = $htmlBody;
     $mail->AltBody = 'Thank you ' . $prenom . ' ' . $nom . '! Your order #' . $orderNo . ' has been confirmed. Total: ' . $total . ' DT.';
-/ 7. Envoyer et retourner le résultat 
-//email envpyer au client en cas dechec
+    // 7. Send and return result
     $mail->send();
     echo json_encode(['success' => true, 'order' => $orderNo]);
 

@@ -1,4 +1,4 @@
-<?php include("header.php"); ?>
+<?php require_once __DIR__ . '/header.php'; ?>
 
 <style>
 .badge-pending  { background:#fff8e1;color:#f57f17;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600; }
@@ -214,4 +214,4 @@ renderStats();
 renderTable();
 </script>
 
-<?php include("footer.php"); ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

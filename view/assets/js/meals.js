@@ -1,20 +1,6 @@
-﻿/**
+/**
  * Meals module + minimal Yummy header chrome (avoids full main.js AOS/Swiper deps).
  */
-console.log('meals.js loaded - version:', new Date().getTime());
-
-(function () {
-  'use strict';
-  // Auto-apply filter if coming from Replace button
-  window.addEventListener('load', function() {
-    var f = window.AUTO_FILTER;
-    if (f && f !== '') {
-      var btn = document.querySelector('.meal-filter[data-filter="' + f + '"]');
-      if (btn) btn.click();
-    }
-  });
-})();
-
 (function () {
   'use strict';
 
@@ -79,11 +65,6 @@ console.log('meals.js loaded - version:', new Date().getTime());
 (function () {
   'use strict';
 
-  // Init Bootstrap tooltips
-  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
-    new bootstrap.Tooltip(el);
-  });
-
   const modalEl = document.getElementById('mealDetailModal');
   if (!modalEl || typeof bootstrap === 'undefined') return;
 
@@ -126,8 +107,8 @@ console.log('meals.js loaded - version:', new Date().getTime());
       recipeBtn.setAttribute('aria-label', `Open recipe for ${name}`);
     }
     if (addBtn) {
-      addBtn.setAttribute('data-meal-id',   card.getAttribute('data-meal-id') || '');
-      addBtn.setAttribute('data-meal-type', card.getAttribute('data-meal-type') || '');
+      addBtn.setAttribute('data-meal-id', card.getAttribute('data-meal-id') || '');
+      addBtn.setAttribute('data-meal-type', mealType);
     }
   }
 
@@ -151,95 +132,51 @@ console.log('meals.js loaded - version:', new Date().getTime());
 
   if (addBtn) {
     addBtn.addEventListener('click', function () {
-      const id       = addBtn.getAttribute('data-meal-id');
-      const name     = modalEl.querySelector('[data-meal-detail="name"]').textContent;
-      const mealType = addBtn.getAttribute('data-meal-type') || '';
-
-      console.log('Adding meal:', { id, name, mealType });
-
-      if (!mealType) {
-        showToast('\u26a0 Error: Meal type is missing!');
-        console.error('Meal type is empty!');
-        return;
-      }
-
-      // Hide meal detail modal and show day picker
+      const id = addBtn.getAttribute('data-meal-id');
+      const mealType = addBtn.getAttribute('data-meal-type');
+      document.dispatchEvent(
+        new CustomEvent('mealPlanner:add', { detail: { mealId: id, mealType: mealType } })
+      );
       modal.hide();
-      showDayPicker(id, name, mealType);
     });
   }
-
-  function showDayPicker(mealId, mealName, mealType) {
-    const dpModal = new bootstrap.Modal(document.getElementById('dayPickerModal'));
-    document.getElementById('dp-meal-name').textContent = mealName;
-
-    const container = document.getElementById('dp-days');
-    container.innerHTML = '';
-
-    const start = new Date(window.PLAN_START || new Date());
-    const end   = new Date(window.PLAN_END   || new Date(start.getTime() + 13 * 86400000));
-    const today = new Date().toISOString().slice(0, 10);
-    // If coming from Replace button, pre-select that date
-    const replaceDate = window.REPLACE_DATE || '';
-
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().slice(0, 10);
-      const isToday = dateStr === today;
-      const label = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
-
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.style.cssText = 'border:1.5px solid ' + (isToday ? '#ce1212' : '#eee') + ';background:' + (isToday ? '#fff8f8' : '#fff') + ';border-radius:10px;padding:.6rem 1rem;text-align:left;cursor:pointer;font-size:.9rem;font-weight:' + (isToday ? '700' : '500') + ';color:#212529;transition:.15s;';
-      btn.innerHTML = label + (isToday ? ' <span style="color:#ce1212;font-size:.8rem;margin-left:.4rem;">Today</span>' : '');
-
-      btn.addEventListener('click', function() {
-        dpModal.hide();
-        saveMealToDay(mealId, mealType, mealName, dateStr);
-      });
-      container.appendChild(btn);
-    }
-
-    dpModal.show();
-  }
-
-  function saveMealToDay(mealId, mealType, mealName, date) {
-    const fd = new FormData();
-    fd.append('meal_id',   mealId);
-    fd.append('meal_type', mealType);
-    fd.append('meal_date', date);
-
-    fetch('/3rdV/Esprit-WEB-2A22-2025-2026-SmartMealPlanner/view/front/plan_add_meal.php', { method: 'POST', body: fd, credentials: 'same-origin' })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        showToast(data.ok
-          ? '\u2714 "' + mealName + '" ' + (data.action || 'added') + ' to plan!'
-          : '\u26a0 ' + (data.message || 'Could not add meal.'));
-      })
-      .catch(function(err) {
-        showToast('\u26a0 Network error: ' + err);
-      });
-  }
-
-  function showToast(message) {
-    let container = document.getElementById('plan-toast-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'plan-toast-container';
-      container.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;';
-      document.body.appendChild(container);
-    }
-    const toast = document.createElement('div');
-    toast.style.cssText = 'background:#ce1212;color:#fff;padding:.75rem 1.25rem;border-radius:.5rem;box-shadow:0 4px 12px rgba(0,0,0,.2);font-size:.95rem;opacity:0;transition:opacity .3s;';
-    toast.textContent = message;
-    container.appendChild(toast);
-    requestAnimationFrame(function() { toast.style.opacity = '1'; });
-    setTimeout(function() {
-      toast.style.opacity = '0';
-      setTimeout(function() { toast.remove(); }, 300);
-    }, 3000);
-  }
 })();
+
+// Handle adding meals to plan
+(function () {
+  'use strict';
+
+  document.addEventListener('mealPlanner:add', function (e) {
+    const { mealId, mealType } = e.detail;
+    
+    if (!mealId || !mealType) {
+      alert('Invalid meal data');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('meal_id', mealId);
+    formData.append('meal_type', mealType);
+
+    fetch('plan_add_meal.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        alert(data.message || 'Meal added to your plan!');
+        // Redirect to today's plan to see the updated meal
+        window.location.href = 'day_plan.php?date=' + new Date().toISOString().split('T')[0];
+      } else {
+        alert(data.message || 'Failed to add meal');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while adding the meal');
+    });
+  });
+})();
+
 

@@ -207,7 +207,7 @@ $_sbCurrentPage = basename($_SERVER['PHP_SELF']);
 $_sbShopPages   = ['afficherProduit.php','ajouterProduit.php','modifierProduit.php','supprimerProduit.php','afficherCategorie.php','ajouterCategorie.php','modifierCategorie.php','supprimerCategorie.php','afficherAvis.php','supprimerAvis.php','afficherReclamations.php'];
 $_sbEventPages  = ['listEvenements.php','addEvenement.php','updateEvenement.php','deleteEvenement.php','listParticipations.php','addParticipation.php','updateParticipation.php','searchParticipations.php','listCommentaires.php','listPromoCodes.php'];
 $_sbMealPages   = ['meal_bo_index.php','meals_admin.php','plans_admin.php'];
-$_sbRecipePages = ['index.php','repas.php','search_repas.php','recette.php','statistiques.php','utilisateurs.php','aliments_durables.php','contenu_nutritionnel.php','add_repas.php','edit_repas.php','add_recette.php','edit_recette.php','view_recette.php','ingredients.php'];
+$_sbRecipePages = ['index.php','repas.php','search_repas.php','recette.php','statistiques.php','aliments_durables.php','contenu_nutritionnel.php','add_repas.php','edit_repas.php','add_recette.php','edit_recette.php','view_recette.php','ingredients.php'];
 
 $_sbSection = '';
 if (in_array($_sbCurrentPage, $_sbShopPages))   $_sbSection = 'shop';
@@ -399,7 +399,7 @@ if (in_array($_sbCurrentPage, $_sbRecipePages)) $_sbSection = 'recipes';
         <a href="statistiques.php" class="<?= $_sbCurrentPage === 'statistiques.php' ? 'active' : '' ?>">
           <i class="bi bi-bar-chart-line"></i> Statistiques
         </a>
-        <a href="utilisateurs.php" class="<?= $_sbCurrentPage === 'utilisateurs.php' ? 'active' : '' ?>">
+        <a href="users.php" class="<?= $_sbCurrentPage === 'users.php' ? 'active' : '' ?>">
           <i class="bi bi-people"></i> Utilisateurs
         </a>
         <a href="aliments_durables.php" class="<?= $_sbCurrentPage === 'aliments_durables.php' ? 'active' : '' ?>">
